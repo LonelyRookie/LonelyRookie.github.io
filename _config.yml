@@ -1,6 +1,6 @@
 # Site settings
-title: LonelyRookie    #博客的标题
-SEOTitle: Abel Huang的博客 | BY Blog  #显示在浏览器上搜索的时候显示的标题
+title: LonelyRookie Blog    #博客的标题
+SEOTitle: Huang CanCan的博客 | BY Blog  #显示在浏览器上搜索的时候显示的标题
 header-img: img/post-bg-desk.jpg  #显示在首页的背景图片
 email: Abel_hcc@outlook.com 
 description: "Every failure is leading towards success."  #网站介绍
@@ -20,7 +20,8 @@ sidebar-avatar: /img/avatar_m.jpg      # use absolute URL, seeing it's used in b
 # SNS settings
 RSS: false
 # weibo_username:     qiubaiying
-#zhihu_username:     qiubaiying
+weibo_username:     
+zhihu_username:     
 github_username:    LonelyRookie
 #facebook_username:  baiying.qiu.7
 #jianshu_username:   e71990ada2fd
@@ -63,11 +64,11 @@ kramdown:
 # Gitalk
 gitalk:
   enable: true    #是否开启Gitalk评论
-  clientID: f2c84e7629bb1446c1a4                            #生成的clientID
-  clientSecret: ca6d6139d1e1b8c43f8b2e19492ddcac8b322d0d    #生成的clientSecret
-  repo: qiubaiying.github.io    #仓库名称
-  owner: qiubaiying    #github用户名
-  admin: qiubaiying
+  clientID: eeca9ad5702b01a57734                            #生成的clientID
+  clientSecret: d90406219e6f09d78c7798878046828e1cc0ae69    #生成的clientSecret
+  repo: LonelyRookie.github.io    #仓库名称
+  owner: LonelyRookie    #github用户名
+  admin: LonelyRookie
   distractionFreeMode: true #是否启用类似FB的阴影遮罩
 
 
