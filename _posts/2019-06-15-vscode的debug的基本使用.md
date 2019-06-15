@@ -20,9 +20,9 @@ vscode的debugger环境是分为Chrome和Node的。
 
 1. 第一步，我们需要安装插件Debugger For Chrome，因为vscode里面是没有内置调试Chrome的模块的，需要单独安装
 
-![Debugger For Chrome](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/chrome201906151628.PNG')
+![Debugger For Chrome](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/c312d13387c3dc72db6968f5f34133803cd90a85/_posts/img_study/vscode-debug/chrome201906151628.PNG)
 
-2. 第二步，打开vscode调试区域，然后点设置
+1. 第二步，打开vscode调试区域，然后点设置
 
 ![vscode调试区域](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/2019-06-15_163020.png)
 
@@ -80,7 +80,7 @@ vscode的debugger环境是分为Chrome和Node的。
 
 首先用live-server打开index.html。vscode里打开index.html页面，按住Ctrl+Shift+p 弹出搜索框，在里面输入live server 找到Open With Live Server 鼠标点击，就能打开http:127.0.01:5500
 
-然后，浏览器自动跳转到http://localhost:5500上了。
+然后，浏览器自动跳转到 http://localhost:5500 上了
 
 接着到launch.json进行配置；
 
