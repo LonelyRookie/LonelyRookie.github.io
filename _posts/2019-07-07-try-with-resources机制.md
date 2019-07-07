@@ -37,3 +37,6 @@ Java 7 的编译器和运行环境支持新的 try-with-resources 语句，称�
 
 readFirstLineFromFile 方法中，如果 try 块和 try-with-resources 块都抛出了异常，则抛出 try 块中的异常， try-with-resources 块中的异常被忽略；
 readFirstLineFromFileWithFinallyBlock 方法中，如果方法 readLine 和 close 都抛出了异常，则抛出 finally 块中的异常， try 块抛出的异常被忽略。
+
+参考：
+[官网 try-with-resources Statement](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html)
