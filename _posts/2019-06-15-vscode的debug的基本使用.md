@@ -18,19 +18,19 @@ vscode的debugger环境是分为Chrome和Node的。
 
 ## 如何在Chrome环境下，使用vscode debugger进行代码调试？
 
-1. 第一步，我们需要安装插件Debugger For Chrome，因为vscode里面是没有内置调试Chrome的模块的，需要单独安装
+第一步，我们需要安装插件Debugger For Chrome，因为vscode里面是没有内置调试Chrome的模块的，需要单独安装
 
 ![Debugger For Chrome](/images/vscode-debug/chrome201906151628.PNG)
 
-1. 第二步，打开vscode调试区域，然后点设置
+第二步，打开vscode调试区域，然后点设置
 
 ![vscode调试区域](/images/vscode-debug/2019-06-15_163020.png)
 
-1. 然后，选Chrome
+ 然后，选Chrome
 
 ![Chrome配置](/images/vscode-debug/2019-06-15_163321.png)
 
-1. 进入了launch.json文件，修改一下配置
+进入了launch.json文件，修改一下配置
 
     {
         // Use IntelliSense to learn about possible attributes.
@@ -48,15 +48,15 @@ vscode的debugger环境是分为Chrome和Node的。
         ]
     }
 
-2. 最后，切换为Launch Chrome for index.html，再点绿色icon或者在index.html目录下直接按F5
+最后，切换为Launch Chrome for index.html，再点绿色icon或者在index.html目录下直接按F5
 
 ![debug运行](/images/vscode-debug/2019-06-15_164522.png)
 
-1. chrome自动启动的结果
+chrome自动启动的结果
 
 ![启动结果](/images/vscode-debug/2019-06-15_170804.png)
 
-1. 我们在index.html里面随便写点js，然后重新启动。console.log()在vscode里面显示出来了
+我们在index.html里面随便写点js，然后重新启动。console.log()在vscode里面显示出来了
 
 ![调试结果](/images/vscode-debug/2019-06-15_171755.png)
 
