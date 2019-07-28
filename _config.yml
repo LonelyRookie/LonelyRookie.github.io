@@ -9,6 +9,8 @@ url: "http://lonelyrookie.github.io"          # your host, for absolute URL
 baseurl: ""      # for example, '/blog' if your blog hosted on 'host/blog'  # 这个就是填写你的博客地址
 github_repo: "https://github.com/LonelyRookie/LonelyRookie.github.io.git" # you code repository 
 
+## jekyll的_posts文件夹中不允许放图片，需要把图片放到根目录下，如：images/test.png
+
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.   # 是否开启侧边栏.
