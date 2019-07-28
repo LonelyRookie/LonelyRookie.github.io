@@ -20,17 +20,17 @@ vscode的debugger环境是分为Chrome和Node的。
 
 1. 第一步，我们需要安装插件Debugger For Chrome，因为vscode里面是没有内置调试Chrome的模块的，需要单独安装
 
-![Debugger For Chrome](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/c312d13387c3dc72db6968f5f34133803cd90a85/_posts/img_study/vscode-debug/chrome201906151628.PNG)
+![Debugger For Chrome](/images/vscode-debug/chrome201906151628.PNG)
 
 1. 第二步，打开vscode调试区域，然后点设置
 
-![vscode调试区域](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/2019-06-15_163020.png)
+![vscode调试区域](/images/vscode-debug/2019-06-15_163020.png)
 
-3. 然后，选Chrome
+1. 然后，选Chrome
 
-![Chrome配置](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/2019-06-15_163321.png)
+![Chrome配置](/images/vscode-debug/2019-06-15_163321.png)
 
-4. 进入了launch.json文件，修改一下配置
+1. 进入了launch.json文件，修改一下配置
 
     {
         // Use IntelliSense to learn about possible attributes.
@@ -48,25 +48,25 @@ vscode的debugger环境是分为Chrome和Node的。
         ]
     }
 
-5. 最后，切换为Launch Chrome for index.html，再点绿色icon或者在index.html目录下直接按F5
+2. 最后，切换为Launch Chrome for index.html，再点绿色icon或者在index.html目录下直接按F5
 
-![debug运行](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/2019-06-15_164522.png)
+![debug运行](/images/vscode-debug/2019-06-15_164522.png)
 
-6. chrome自动启动的结果
+1. chrome自动启动的结果
 
-![启动结果](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/2019-06-15_170804.png)
+![启动结果](/images/vscode-debug/2019-06-15_170804.png)
 
-7. 我们在index.html里面随便写点js，然后重新启动。console.log()在vscode里面显示出来了
+1. 我们在index.html里面随便写点js，然后重新启动。console.log()在vscode里面显示出来了
 
-![调试结果](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/2019-06-15_171755.png)
+![调试结果](/images/vscode-debug/2019-06-15_171755.png)
 
 ### 断点调试
 
 我们在vscode里面加断点，进行单步调试。在index.html里面写的js代码不可以打断点，所以把js代码放到js文件中，引入index,js到index.html中
 
-![断点调试1](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/2019-06-15_173151.png)
+![断点调试1](/images/vscode-debug/2019-06-15_173151.png)
 
-![断点调试2](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/2019-06-15_173408.png)
+![断点调试2](/images/vscode-debug/2019-06-15_173408.png)
 
 ### 加Attach用法
 
@@ -99,7 +99,7 @@ vscode的debugger环境是分为Chrome和Node的。
 
 对Chrome浏览器启动项进行配置。
 
-![chrome启动项配置](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/2019-06-15_225249.png)
+![chrome启动项配置](/images/vscode-debug/2019-06-15_225249.png)
 
 现在关掉你现在的chrome，去vscode调试面板上，换成Attach to Chrome，在启动，就可以了
 
@@ -183,7 +183,7 @@ vscode内置Node的调试环境，就不需要安装插件了，首先为node.js
 
 如：在 src/components/HelloWorld.vue里设置一个断点
 
-![设置断点](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/2019-06-16_001833.png)
+![设置断点](/images/vscode-debug/2019-06-16_001833.png)
 
 打开终端并使用 Vue CLI 开启这个应用：`npm run dev 或 npm run serve`
 
@@ -195,24 +195,24 @@ vscode内置Node的调试环境，就不需要安装插件了，首先为node.js
 
 使用非常棒的 Chrome 版本 和 Firefox 版本的 Vue.js devtools。使用 devtools 有很多好处，比如它可以让你能够实时编辑数据属性并立即看到其反映出来的变化。另一个主要的好处是能够为 Vuex 提供时间旅行式的调试体验。
 
-![Vue.js devtools](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/2019-06-15_235645.png)
+![Vue.js devtools](/images/vscode-debug/2019-06-15_235645.png)
 
 >请留意如果页面使用了一个生产环境/压缩后的 Vue.js 构建版本 (例如来自一个 CDN 的标准的链接)，devtools 的审查功能是默认被禁用的，所以 Vue 面板不会出现。如果你切换到一个非压缩版本，你可能需要强制刷新该页面来看到它。
 
 补充：
 在chrome浏览器中，Vue Devtools需要到chrome应用商店下载，但是我们访问不到chrome应用商店，需要翻墙。
 
-![Vue Devtools](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/2019-06-16_002604.png)
+![Vue Devtools](/images/vscode-debug/2019-06-16_002604.png)
 
 翻墙：我用的是赛风，下载好[赛风](https://s3.amazonaws.com/psiphon/web/mjr4-p23r-puwl/zh/download.html)软件(有可能访问不到这个链接)后，打开连接成功后就能访问Google，但是网速有点慢。去chrome应用商店下载谷歌访问助手，安装成功后，以后打开chrome就能访问Google了，不需要打开赛风。
 
-![谷歌访问助手](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/2019-06-16_003306.png)
+![谷歌访问助手](/images/vscode-debug/2019-06-16_003306.png)
 
 ### 简单的 debugger 语句
 
 你可以直接在代码中使用原生的 debugger 语句。如果你选择了这种方式，请千万记得当你调试完毕之后把这个语句移除。
 
-![debugger语句](https://github.com/LonelyRookie/LonelyRookie.github.io/blob/master/_posts/img_study/vscode-debug/2019-06-16_000110.png)
+![debugger语句](/images/vscode-debug/2019-06-16_000110.png)
 
 >参考来源：
 [官网](https://cn.vuejs.org/v2/cookbook/debugging-in-vscode.html)
