@@ -1,0 +1,20 @@
+# 导航菜单
+menu:
+  首页: / || fas fa-home
+  标签: /tags/ || fas fa-tags
+  分类: /categories/ || fas fa-folder-open
+  归档: /archives/ || fas fa-archive
+  关于: /about/ || fas fa-heart
+
+# 网站图标
+favicon: https://avatars.githubusercontent.com/u/40121337?v=4
+
+# 头像
+avatar:
+  img: https://avatars.githubusercontent.com/u/40121337?v=4
+  effect: true
+
+# 社交链接
+social:
+  github: https://github.com/LonelyRookie || fab fa-github
+  email: 1782480783@qq.com || fas fa-envelope
