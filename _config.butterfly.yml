@@ -1,4 +1,19 @@
-# 导航菜单
+# --------------------------------------
+# Hexo Butterfly Theme Configuration
+# 主题配置文档: https://butterfly.js.org/posts/4aa8abbe/
+# --------------------------------------
+
+# --------------------------------------
+# 导航设置
+# --------------------------------------
+nav:
+  logo:
+  display_title: true
+  display_post_title: true
+  fixed: false
+
+# 菜单配置
+# 格式: 名称: 路径 || 图标
 menu:
   首页: / || fas fa-home
   标签: /tags/ || fas fa-tags
@@ -6,6 +21,30 @@ menu:
   归档: /archives/ || fas fa-archive
   关于: /about/ || fas fa-heart
 
+# --------------------------------------
+# 代码块设置
+# --------------------------------------
+code_blocks:
+  theme: darker
+  macStyle: true
+  height_limit: false
+  word_wrap: false
+  copy: true
+  language: true
+  shrink: false
+  fullpage: false
+
+# --------------------------------------
+# 社交链接
+# 格式: icon: 链接 || 描述 || 颜色
+# --------------------------------------
+social:
+  fab fa-github: https://github.com/LonelyRookie || GitHub || '#24292e'
+  fas fa-envelope: mailto:1782480783@qq.com || Email || '#4a7dbe'
+
+# --------------------------------------
+# 图片设置
+# --------------------------------------
 # 网站图标
 favicon: https://avatars.githubusercontent.com/u/40121337?v=4
 
@@ -14,7 +53,343 @@ avatar:
   img: https://avatars.githubusercontent.com/u/40121337?v=4
   effect: true
 
-# 社交链接
-social:
-  github: https://github.com/LonelyRookie || fab fa-github
-  email: 1782480783@qq.com || fas fa-envelope
+# 顶部图片设置
+disable_top_img: false
+default_top_img: https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920
+index_img: https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920
+archive_img: https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1920
+
+# 网站背景
+background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+
+# 文章封面默认图片
+cover:
+  index_enable: true
+  aside_enable: true
+  archives_enable: true
+  default_cover:
+    - https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800
+    - https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800
+    - https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800
+
+# 404 页面
+error_404:
+  enable: true
+  subtitle: '页面没有找到'
+  background: https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=1920
+
+# --------------------------------------
+# 文章元信息
+# --------------------------------------
+post_meta:
+  page:
+    date_type: created
+    date_format: date
+    categories: true
+    tags: false
+    label: true
+  post:
+    position: left
+    date_type: both
+    date_format: date
+    categories: true
+    tags: true
+    label: true
+
+# --------------------------------------
+# 首页设置
+# --------------------------------------
+index_site_info_top:
+index_top_img_height: 60vh
+
+# 主页副标题 (打字机效果)
+subtitle:
+  enable: true
+  effect: true
+  typed_option:
+  source: false
+  sub:
+    - 记录生活与技术
+    - 学习是一种态度
+    - 分享是一种快乐
+
+# 文章布局: 1-7
+index_layout: 3
+
+# 首页文章摘要
+index_post_content:
+  method: 3
+  length: 500
+
+# --------------------------------------
+# 文章页设置
+# --------------------------------------
+toc:
+  post: true
+  page: false
+  number: true
+  expand: false
+  style_simple: false
+  scroll_percent: true
+
+post_copyright:
+  enable: true
+  decode: false
+  author_href:
+  license: CC BY-NC-SA 4.0
+  license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+# 赞赏
+reward:
+  enable: false
+  text:
+  QR_code:
+
+# 相关文章
+related_post:
+  enable: true
+  limit: 6
+  date_type: created
+
+# 文章分页
+post_pagination: 1
+
+# --------------------------------------
+# 页脚设置
+# --------------------------------------
+footer:
+  nav:
+  owner:
+    enable: true
+    since: 2025
+  copyright:
+    enable: true
+    version: true
+  custom_text: <a href="https://github.com/LonelyRookie" target="_blank">Follow me on GitHub</a>
+
+# --------------------------------------
+# 侧边栏设置
+# --------------------------------------
+aside:
+  enable: true
+  hide: false
+  button: true
+  mobile: true
+  position: right
+  display:
+    archive: true
+    tag: true
+    category: true
+  card_author:
+    enable: true
+    description: 热爱技术，热爱生活
+    button:
+      enable: true
+      icon: fab fa-github
+      text: Follow Me
+      link: https://github.com/LonelyRookie
+  card_announcement:
+    enable: true
+    content: 欢迎来到我的博客！
+  card_recent_post:
+    enable: true
+    limit: 5
+    sort: date
+    sort_order:
+  card_categories:
+    enable: true
+    limit: 8
+    expand: none
+    sort_order:
+  card_tags:
+    enable: true
+    limit: 40
+    color: false
+    sort_order:
+  card_archives:
+    enable: true
+    type: monthly
+    format: MMMM YYYY
+    order: -1
+    limit: 8
+    sort_order:
+  card_webinfo:
+    enable: true
+    post_count: true
+    last_push_date: true
+    sort_order:
+
+# --------------------------------------
+# 右下角按钮
+# --------------------------------------
+rightside:
+  enable: true
+  item_order:
+    readmode: true
+    translate: true
+    darkmode: true
+    aside: true
+    chat_to_admin: false
+    back_to_top: true
+    back_to_bottom: true
+
+# --------------------------------------
+# 深色模式
+# --------------------------------------
+darkmode:
+  enable: true
+  button: true
+  autoChangeMode: 1
+
+# --------------------------------------
+# 阅读模式
+# --------------------------------------
+readmode: true
+
+# --------------------------------------
+# 网站验证 (SEO)
+# --------------------------------------
+# site_verification:
+#   google:
+#   baidu:
+
+# --------------------------------------
+# 分析统计
+# --------------------------------------
+baidu_analytics:
+google_analytics:
+
+# --------------------------------------
+# 搜索功能
+# --------------------------------------
+search:
+  enable: true
+  path: search.xml
+  field: post
+  content: true
+
+# --------------------------------------
+# 数学公式
+# --------------------------------------
+mathjax:
+  enable: false
+  per_page: false
+
+katex:
+  enable: false
+  per_page: false
+
+# --------------------------------------
+# Mermaid 图表
+# --------------------------------------
+mermaid:
+  enable: true
+  theme: default
+
+# --------------------------------------
+# 评论系统 (选择一个启用)
+# --------------------------------------
+comments:
+  active: false
+  # Disqus
+  disqus:
+    shortname:
+  # Gitalk
+  gitalk:
+    clientID:
+    clientSecret:
+    repo:
+    owner:
+    admin:
+  # Valine
+  valine:
+    appId:
+    appKey:
+    placeholder: 说点什么吧~
+    avatar: monsterid
+  # Waline
+  waline:
+    serverURL:
+
+# --------------------------------------
+# 在线聊天
+# --------------------------------------
+chat:
+  enable: false
+
+# --------------------------------------
+# CDN 设置
+# --------------------------------------
+CDN:
+  enable: false
+
+# --------------------------------------
+# 字体设置
+# --------------------------------------
+font:
+  global-font-size: 16px
+  code-font-size: 14px
+  font-family: 'PingFang SC, Microsoft YaHei, sans-serif'
+  code-font-family: 'Consolas, Monaco, monospace'
+
+# --------------------------------------
+# 网站性能
+# --------------------------------------
+pjax:
+  enable: true
+
+lazyload:
+  enable: true
+  field: site
+  loading:
+    src: /img/loading.gif
+
+# --------------------------------------
+# PWA
+# --------------------------------------
+pwa:
+  enable: false
+
+# --------------------------------------
+# Open Graph
+# --------------------------------------
+Open_Graph_meta:
+  enable: true
+  option:
+
+# --------------------------------------
+# JS/CSS 注入
+# --------------------------------------
+inject:
+  head:
+  bottom:
+
+# --------------------------------------
+# 额外配置
+# --------------------------------------
+highlight_theme: mac
+medium_zoom: true
+fancybox: true
+
+# Snackbar 弹窗
+snackbar:
+  enable: true
+  position: bottom-left
+  background_light: '#49b1f5'
+  background_dark: '#1f1f1f'
+
+# 照片墙
+canvas_nest:
+  enable: false
+
+# 鼠标点击效果
+fireworks:
+  enable: false
+
+# --------------------------------------
+# 页面加载动画
+# --------------------------------------
+preloader:
+  enable: true
+  source: 1
+  pace_css_url:
