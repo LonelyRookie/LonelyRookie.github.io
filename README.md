@@ -34,3 +34,18 @@ hexo clean && hexo generate && hexo server
 # 4. 确认无误后部署
 hexo clean && hexo generate && hexo deploy
 ```
+
+注：使用`hexo deploy`命令后，会把静态资源文件推送到`master`分支。
+
+```yml
+deploy:
+  type: git
+  repo: git@github.com:LonelyRookie/LonelyRookie.github.io.git
+  branch: master
+```
+
+--- 
+
+`master`分支存放的是打包后的静态资源文件
+
+`feature/dev`分支存放的是工程代码
