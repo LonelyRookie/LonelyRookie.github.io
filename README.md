@@ -1,11 +1,4 @@
-<!--
- * @Author: LonelyRookie Abel_hcc@outlook.com
- * @Date: 2026-04-18 23:32:03
- * @LastEditors: LonelyRookie Abel_hcc@outlook.com
- * @LastEditTime: 2026-04-18 23:35:14
- * @FilePath: \LonelyRookie.github.io\README.md
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
--->
+
 ## 部署
 
 ```bash
@@ -49,3 +42,10 @@ deploy:
 `master`分支存放的是打包后的静态资源文件
 
 `feature/dev`分支存放的是工程代码
+
+
+## 将本地工程推送到远程仓库
+
+```shell
+git push origin HEAD:feature/dev
+```
