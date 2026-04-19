@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /search.xml
+
+Sitemap: https://lonelyrookie.github.io/sitemap.xml
+Sitemap: https://lonelyrookie.github.io/baidusitemap.xml
