@@ -1,0 +1,798 @@
+---
+title: Hexo博客搭建指南
+abbrlink: 3632233997
+date: 2026-04-19 14:12:04
+tags:
+  - Hexo
+categories:
+  - 博客搭建
+---
+
+> 本指南基于 Hexo 官方文档及多个实战教程整理，帮助你从零开始搭建属于自己的静态博客。
+
+---
+
+## 目录
+
+1. [前言：为何选择 Hexo？](#前言为何选择-hexo)
+2. [环境准备](#环境准备)
+3. [安装 Hexo 并初始化博客](#安装-hexo-并初始化博客)
+4. [基础配置](#基础配置)
+5. [写作与发布](#写作与发布)
+6. [主题美化](#主题美化)
+7. [部署到 GitHub Pages](#部署到-github-pages)
+8. [常用命令速查](#常用命令速查)
+9. [进阶技巧](#进阶技巧)
+10. [常见问题解答](#常见问题解答)
+
+---
+
+## 前言：为何选择 Hexo？
+
+Hexo 是一个快速、简洁且高效的博客框架。它使用 Markdown 解析文章，在几秒内即可利用靓丽的主题生成静态网页。
+
+### Hexo 的优势
+
+| 特性 | 说明 |
+|------|------|
+| **极速生成** | 亿级文件也只需几秒，高效转换为静态页面 |
+| **Markdown 支持** | 使用 Markdown 写作，简洁高效 |
+| **丰富主题** | 拥有大量精美主题，可自由定制 |
+| **一键部署** | 支持 GitHub Pages、Vercel、Netlify 等多种部署方式 |
+| **Git 版本控制** | 所有内容都在本地，便于使用 Git 进行版本管理 |
+| **完全免费** | 配合 GitHub Pages 可实现零成本托管 |
+
+### 适用场景
+
+- 个人博客
+- 技术分享
+- 作品展示
+- 项目文档
+
+---
+
+## 环境准备
+
+在开始之前，你需要安装两个必要的工具：**Node.js** 和 **Git**。
+
+### 1. 安装 Node.js
+
+Node.js 为 Hexo 提供运行环境。
+
+**版本要求：**
+- Node.js 版本需不低于 10.13
+- 建议使用 Node.js 12.0 及以上版本
+
+**安装方式：**
+
+| 平台 | 安装方法 |
+|------|----------|
+| **Windows** | 下载 [官方安装程序](https://nodejs.org/zh-cn/download/)，确保勾选 "Add to PATH" 选项 |
+| **Mac** | 使用 Homebrew: `brew install node` 或下载 [安装程序](https://nodejs.org/zh-cn/download/) |
+| **Linux (Ubuntu/Debian)** | `sudo apt-get install nodejs` |
+| **Linux (Fedora/RHEL/CentOS)** | `sudo yum install nodejs` |
+
+**验证安装：**
+
+```bash
+node -v
+npm -v
+```
+
+### 2. 安装 Git
+
+Git 用于版本控制和将博客部署到 GitHub Pages。
+
+**安装方式：**
+
+| 平台 | 安装方法 |
+|------|----------|
+| **Windows** | 下载并安装 [Git for Windows](https://git-scm.com/download/win) |
+| **Mac** | 使用 Homebrew: `brew install git` 或下载安装程序 |
+| **Linux (Ubuntu/Debian)** | `sudo apt-get install git` |
+| **Linux (Fedora/RHEL/CentOS)** | `sudo yum install git` |
+
+**验证安装：**
+
+```bash
+git --version
+```
+
+**配置 Git 用户信息：**
+
+```bash
+git config --global user.name "你的用户名"
+git config --global user.email "你的邮箱"
+```
+
+---
+
+## 安装 Hexo 并初始化博客
+
+### 1. 全局安装 Hexo CLI
+
+打开命令行工具（推荐使用 PowerShell 或 Git Bash），输入：
+
+```bash
+npm install -g hexo-cli
+```
+
+`-g` 参数表示全局安装，这样你就可以在任何目录下使用 `hexo` 命令。
+
+### 2. 创建博客项目
+
+```bash
+# 创建项目文件夹
+mkdir my-blog
+cd my-blog
+
+# 初始化 Hexo
+hexo init
+
+# 安装依赖
+npm install
+```
+
+### 3. 项目文件结构
+
+初始化后，你的项目文件夹结构如下：
+
+```
+my-blog/
+├── _config.yml      # 站点配置文件（重要！）
+├── package.json     # 应用程序信息
+├── scaffolds/       # 模版文件夹
+├── source/          # 资源文件夹
+│   ├── _drafts/     # 草稿
+│   └── _posts/      # 文章（Markdown 文件存放位置）
+└── themes/          # 主题文件夹
+```
+
+### 4. 本地预览
+
+```bash
+hexo server
+# 或简写
+hexo s
+```
+
+打开浏览器访问 `http://localhost:4000`，即可看到你的博客！
+
+按 `Ctrl + C` 可停止服务器。
+
+---
+
+## 基础配置
+
+编辑根目录下的 `_config.yml` 文件，这是博客的"总开关"。
+
+### 网站基本配置
+
+```yaml
+# Site
+title: 我的博客              # 网站标题
+subtitle: '记录生活与技术'   # 网站副标题
+description: ''             # 网站描述（用于 SEO）
+keywords:                   # 网站关键词
+author: Your Name           # 你的名字
+language: zh-CN             # 网站语言（中文）
+timezone: 'Asia/Shanghai'   # 时区
+```
+
+### 网址配置
+
+```yaml
+# URL
+url: https://yourname.github.io   # 网站网址
+permalink: :year/:month/:day/:title/  # 文章永久链接格式
+permalink_defaults:
+pretty_urls:
+  trailing_index: true
+  trailing_html: true
+```
+
+### 分页配置
+
+```yaml
+# Home page setting
+index_generator:
+  path: ''
+  per_page: 10        # 每页显示文章数
+  order_by: -date     # 按日期降序排列（最新文章在前）
+```
+
+### 日期格式
+
+```yaml
+date_format: YYYY-MM-DD
+time_format: HH:mm:ss
+```
+
+---
+
+## 写作与发布
+
+### 创建新文章
+
+```bash
+hexo new "我的第一篇博客"
+# 或指定布局
+hexo new post "我的第一篇博客"
+```
+
+这会在 `source/_posts/` 文件夹中生成一个 `.md` 文件。
+
+### 文章 Front-matter
+
+打开生成的 Markdown 文件，你会看到类似这样的内容：
+
+```markdown
+---
+title: 我的第一篇博客
+date: 2025-04-18 10:00:00
+tags:
+  - Hexo
+  - 教程
+categories:
+  - 博客搭建
+---
+
+# 这是我的第一篇文章！
+
+Hexo 真是一个很棒的工具，能帮助我轻松地创建和发布博客。
+
+## 二级标题
+
+支持 Markdown 语法：
+- **加粗文本**
+- *斜体文本*
+- `代码片段`
+```
+
+### Front-matter 参数说明
+
+| 参数 | 说明 | 必填 |
+|------|------|------|
+| `title` | 文章标题 | 是 |
+| `date` | 文章发布日期 | 是 |
+| `updated` | 文章更新日期 | 否 |
+| `categories` | 文章分类 | 否 |
+| `tags` | 文章标签 | 否 |
+| `description` | 文章描述（用于 SEO） | 否 |
+| `keywords` | 文章关键词 | 否 |
+| `toc` | 是否显示目录 | 否 |
+| `comments` | 是否开启评论 | 否 |
+
+### 创建页面
+
+```bash
+hexo new page "about"
+```
+
+这会在 `source/` 文件夹中创建一个 `about` 文件夹，用于创建独立页面（如关于页面）。
+
+### 草稿功能
+
+```bash
+# 创建草稿
+hexo new draft "草稿标题"
+
+# 发布草稿
+hexo publish "草稿标题"
+```
+
+草稿保存在 `source/_drafts/` 文件夹，默认不会渲染。
+
+---
+
+## 主题美化
+
+Hexo 拥有丰富的主题生态，以下是 2025 年最受欢迎的主题推荐。
+
+### 🔥 热门主题排行榜
+
+| 排名 | 主题 | GitHub Stars | 风格 | 特点 |
+|------|------|-------------|------|------|
+| 1 | **Butterfly** | 8,187+ | 卡片式设计 | 功能最全、文档完善、持续更新 |
+| 2 | **Fluid** | 8,081+ | Material Design | 简约优雅、中文友好 |
+| 3 | **Icarus** | 6,726+ | 简洁大方 | 响应式、多栏布局 |
+| 4 | **Matery** | 5,368+ | Material Design | 卡片式、杂志风格 |
+| 5 | **NexT** | 27,000+ (累计) | 极简主义 | 历史最悠久、生态最丰富 |
+
+---
+
+### 🦋 Butterfly（强烈推荐）
+
+**GitHub:** https://github.com/jerryc127/hexo-theme-butterfly
+**官网:** https://butterfly.js.org
+
+**特点：**
+- ✅ 暗黑模式支持
+- ✅ 多种评论系统（Disqus、Gitalk、Valine、Waline、Twikoo、Giscus）
+- ✅ 三种搜索集成（Algolia、本地搜索、DocSearch）
+- ✅ MathJax/KaTeX 数学公式渲染
+- ✅ 图片画廊、PWA 支持
+- ✅ 文档完善（中英文）
+
+**适合人群：** 想要一个功能全面、开箱即用的博客主题的开发者
+
+---
+
+### 💧 Fluid
+
+**GitHub:** https://github.com/fluid-dev/hexo-theme-fluid
+**官网:** https://hexo.fluid-dev.com
+
+**特点：**
+- ✅ Material Design 美学设计
+- ✅ 暗黑模式
+- ✅ 本地搜索
+- ✅ 7+ 评论系统支持
+- ✅ MathJax/KaTeX、Mermaid 图表
+- ✅ 图片懒加载
+
+**适合人群：** 喜欢 Material Design 风格，追求视觉美感的博主
+
+---
+
+### 📰 Matery
+
+**GitHub:** https://github.com/blinkfox/hexo-theme-matery
+**演示:** http://blinkfox.com
+
+**特点：**
+- ✅ 卡片式杂志风格布局
+- ✅ 响应式设计
+- ✅ 国际化支持
+- ✅ MathJax 数学公式
+- ✅ 字数统计、阅读时长
+
+**适合人群：** 想要一个视觉独特、杂志风格博客的用户
+
+---
+
+### 🎯 NexT
+
+**GitHub:** https://github.com/next-theme/hexo-theme-next
+**官网:** https://theme-next.js.org
+
+**特点：**
+- ✅ 极简设计，三种风格可选
+- ✅ 历史最悠久，用户群体最大
+- ✅ 插件生态丰富
+- ✅ 持续维护更新
+
+**适合人群：** 喜欢简洁风格，需要稳定可靠主题的用户
+
+---
+
+### 🎨 其他特色主题
+
+| 主题 | 风格 | GitHub |
+|------|------|--------|
+| **Yun（云）** | 可爱、二次元风格 | https://github.com/YunYouJun/hexo-theme-yun |
+| **Aurora** | Vue 3 驱动、现代科技感 | https://github.com/auroral-ui/hexo-theme-aurora |
+| **Shoka / ShokaX** | 书架风格，专为笔记阅读优化 | https://github.com/amehime/hexo-theme-shoka |
+| **Keep** | 极简、专注阅读 | https://github.com/XPoet/hexo-theme-keep |
+| **Anzhiyu** | 多彩实用、Butterfly 魔改版 | https://github.com/anzhiyu-c/hexo-theme-anzhiyu |
+| **Cactus** | 极简、Geek 风格、四种配色 | https://github.com/probberechts/hexo-theme-cactus |
+| **Stellar** | 简约、适合文档站 | https://github.com/xaoxuu/hexo-theme-stellar |
+
+---
+
+### 📊 如何选择主题？
+
+| 需求 | 推荐主题 |
+|------|----------|
+| 功能最全、开箱即用 | **Butterfly** |
+| Material Design 爱好者 | **Fluid** 或 **Matery** |
+| 极简主义、专注内容 | **NexT** 或 **Keep** |
+| 二次元/可爱风格 | **Yun** |
+| 科技感/现代感 | **Aurora** |
+| 笔记/知识库 | **ShokaX** |
+| 作品集/简历站 | **Cactus** |
+
+---
+
+### 安装主题（以 Butterfly 为例）
+
+**方法一：npm 安装（推荐）**
+
+```bash
+npm install hexo-theme-butterfly
+```
+
+**方法二：Git 克隆**
+
+```bash
+cd themes
+git clone -b master https://github.com/jerryc127/hexo-theme-butterfly.git butterfly
+```
+
+### 启用主题
+
+修改 `_config.yml`：
+
+```yaml
+theme: butterfly
+```
+
+安装依赖：如果您尚未安裝 pug 和 stylus 渲染器
+
+```shell
+npm install hexo-renderer-pug hexo-renderer-stylus --save
+```
+
+将 Pug 模板引擎语法转换为 HTML
+
+将 Stylus 样式语言转换为 CSS
+
+### 主题配置
+
+创建主题配置文件 `_config.butterfly.yml`（放在根目录），这样更新主题时不会覆盖你的配置。
+
+**配置方法：**
+1. 从主题目录 `themes/butterfly/_config.yml` 复制内容到根目录的 `_config.butterfly.yml`
+2. 或从 GitHub 复制：https://github.com/jerryc127/hexo-theme-butterfly/blob/master/_config.yml
+
+**常用配置示例：**
+
+```yaml
+# _config.butterfly.yml
+
+# 导航菜单（格式：显示名: 路径 || 图标名）
+menu:
+  首页: / || fas fa-home
+  标签: /tags/ || fas fa-tags
+  分类: /categories/ || fas fa-folder-open
+  归档: /archives/ || fas fa-archive
+  关于: /about/ || fas fa-heart
+
+# 网站图标
+favicon: /img/favicon.png
+
+# 头像
+avatar:
+  img: /img/avatar.png
+  effect: true  # 头像旋转动效
+
+# 社交链接（格式：图标名: 链接 || 描述）
+social:
+  fab fa-github: https://github.com/yourname || Github
+  fas fa-envelope: mailto:your@email.com || Email
+```
+
+**配置格式说明：**
+
+| 配置项 | 格式 |
+|--------|------|
+| 菜单 | `显示名: /路径/ || 图标名` |
+| 社交链接 | `图标名: 链接 || 描述` |
+
+图标名参考：https://fontawesome.com/icons
+
+### 生成并预览
+
+```bash
+hexo clean
+hexo generate
+hexo server
+```
+
+### 更多主题
+
+想探索更多主题？访问：
+- **Hexo 官方主题库:** https://hexo.io/themes
+- **GitHub 搜索:** https://github.com/search?q=hexo-theme
+
+---
+
+## 部署到 GitHub Pages
+
+### 1. 创建 GitHub 仓库
+
+1. 登录 [GitHub](https://github.com/)
+2. 创建新仓库，命名为 `<username>.github.io`（username 替换为你的 GitHub 用户名）
+3. 仓库设为 Public
+
+### 2. 配置 SSH 密钥（推荐）
+
+```bash
+# 生成 SSH 密钥
+ssh-keygen -t rsa -C "your@email.com"
+
+# 查看公钥
+cat ~/.ssh/id_rsa.pub
+```
+
+将公钥内容添加到 GitHub：`Settings` → `SSH and GPG keys` → `New SSH key`
+
+### 3. 安装部署插件
+
+```bash
+npm install hexo-deployer-git --save
+```
+
+### 4. 配置部署信息
+
+修改 `_config.yml`：
+
+```yaml
+deploy:
+  type: git
+  repo: git@github.com:<username>/<username>.github.io.git
+  # 或使用 HTTPS
+  # repo: https://github.com/<username>/<username>.github.io.git
+  branch: main
+```
+
+### 5. 部署
+
+```bash
+hexo clean
+hexo generate
+hexo deploy
+```
+
+或简写：
+
+```bash
+hexo cl && hexo g && hexo d
+```
+
+### 6. 访问你的博客
+
+部署完成后，访问 `https://<username>.github.io` 即可看到你的博客！
+
+---
+
+## 常用命令速查
+
+| 命令 | 简写 | 说明 |
+|------|------|------|
+| `hexo init` | - | 初始化博客 |
+| `hexo new "title"` | `hexo n` | 创建新文章 |
+| `hexo generate` | `hexo g` | 生成静态文件 |
+| `hexo server` | `hexo s` | 启动本地服务器 |
+| `hexo deploy` | `hexo d` | 部署到远程仓库 |
+| `hexo clean` | `hexo cl` | 清除缓存和静态文件 |
+| `hexo publish "title"` | - | 发布草稿 |
+
+### 日常发布流程
+
+```bash
+# 1. 创建文章
+hexo new "文章标题"
+
+# 2. 编辑文章（使用 Markdown 编辑器）
+
+# 3. 本地预览
+hexo clean && hexo generate && hexo server
+
+# 4. 确认无误后部署
+hexo clean && hexo generate && hexo deploy
+```
+
+---
+
+## 进阶技巧
+
+### 1. 添加本地搜索功能
+
+**步骤一：安装插件**
+
+```bash
+npm install hexo-generator-search --save
+```
+
+**步骤二：配置站点文件 `_config.yml`**
+
+```yaml
+search:
+  path: search.xml
+  field: post
+  content: true
+  format: html
+```
+
+| 参数 | 说明 |
+|------|------|
+| `path` | 搜索文件路径，默认 `search.xml` |
+| `field` | 搜索范围：`post`（文章）、`page`（页面）、`all`（全部） |
+| `content` | 是否包含文章全文内容 |
+| `format` | 输出格式：`html` 或 `raw` |
+
+**步骤三：配置 Butterfly 主题 `_config.butterfly.yml`**
+
+```yaml
+search:
+  # 选择搜索方式：algolia_search / local_search / docsearch
+  # 不需要搜索则留空
+  use: local_search
+  placeholder: 搜索文章...
+
+  # Algolia 搜索配置（使用 Algolia 时配置）
+  algolia_search:
+    # 每页显示的搜索结果数量
+    hitsPerPage: 6
+
+  # 本地搜索配置
+  local_search:
+    # 进入网页时预加载搜索数据
+    preload: false
+    # 每篇文章显示的匹配结果数量，-1 表示显示全部
+    top_n_per_article: 1
+    # 将 HTML 字符串解码为可读字符串
+    unescape: false
+    # 搜索结果分页配置
+    pagination:
+      # 是否启用搜索结果分页
+      enable: false
+      # 每页显示的搜索结果数量
+      hitsPerPage: 8
+    CDN:
+```
+
+| 参数 | 说明 |
+|------|------|
+| `use` | 搜索方式，设为 `local_search` 即启用本地搜索 |
+| `placeholder` | 搜索框占位文字（可选） |
+| `algolia_search.hitsPerPage` | Algolia 搜索每页结果数 |
+| `local_search.preload` | 是否预加载搜索数据 |
+| `local_search.top_n_per_article` | 每篇文章显示的匹配结果数 |
+| `local_search.unescape` | HTML 字符串解码 |
+| `local_search.pagination.enable` | 是否启用搜索结果分页 |
+| `local_search.pagination.hitsPerPage` | 分页模式下每页显示的结果数 |
+
+### 2. 添加 RSS 订阅
+
+```bash
+npm install hexo-generator-feed --save
+```
+
+在 `_config.yml` 中添加：
+
+```yaml
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
+  hub:
+  content:
+  content_limit: 140
+  content_limit_delim: ' '
+  order_by: -date
+  icon: icon.png
+```
+
+### 3. 优化文章链接
+
+默认链接格式为 `:year/:month/:day/:title/`，可以简化为：
+
+```yaml
+permalink: posts/:title/
+```
+
+或使用 abbrlink 插件生成唯一短链接：
+
+```bash
+npm install hexo-abbrlink --save
+```
+
+```yaml
+permalink: posts/:abbrlink/
+abbrlink:
+  alg: crc32
+  rep: hex
+```
+
+### 4. 图片管理
+
+启用资源文件夹：
+
+```yaml
+post_asset_folder: true
+```
+
+创建文章时会自动生成同名文件夹，将图片放入其中，使用以下语法引用：
+
+```markdown
+{% asset_img example.jpg 图片描述 %}
+```
+
+### 5. 自定义域名
+
+1. 购买域名（推荐 [Namecheap](https://www.namecheap.com/)、[Namesilo](https://www.namesilo.com/)）
+2. 在域名 DNS 设置中添加 CNAME 记录指向 `<username>.github.io`
+3. 在博客 `source` 目录下创建 `CNAME` 文件，写入你的域名
+
+### 6. SEO 优化
+
+**Google 收录：**
+
+1. 安装站点地图插件：
+```bash
+npm install hexo-generator-sitemap --save
+```
+
+2. 提交站点地图到 [Google Search Console](https://search.google.com/search-console)
+
+**百度收录：**
+
+```bash
+npm install hexo-generator-baidu-sitemap --save
+```
+
+---
+
+## 常见问题解答
+
+### Q1: 运行 `hexo` 命令提示找不到命令？
+
+**原因：** Hexo 未正确安装或未添加到环境变量。
+
+**解决：**
+- 重新安装：`npm install -g hexo-cli`
+- Windows 用户确保 Node.js 安装时勾选了 "Add to PATH"
+
+### Q2: 部署时提示权限错误？
+
+**原因：** SSH 密钥未正确配置。
+
+**解决：**
+1. 检查 SSH 密钥是否添加到 GitHub
+2. 测试连接：`ssh -T git@github.com`
+3. 或使用 HTTPS 方式部署
+
+### Q3: 主题更新后配置丢失？
+
+**原因：** 直接修改了主题目录下的配置文件。
+
+**解决：** 使用根目录下的 `_config.[theme].yml` 进行配置，这样更新主题不会覆盖。
+
+### Q4: 文章中文标题链接乱码？
+
+**原因：** 默认链接格式对中文支持不佳。
+
+**解决：** 使用 abbrlink 插件或修改 permalink 格式：
+```yaml
+permalink: :year/:month/:day/:hash/
+```
+
+### Q5: 本地预览正常，部署后样式丢失？
+
+**原因：** `url` 和 `root` 配置不正确。
+
+**解决：** 确保 `_config.yml` 中：
+```yaml
+url: https://<username>.github.io
+root: /
+```
+
+---
+
+## 参考资源
+
+- [Hexo 官方文档](https://hexo.io/zh-cn/docs/)
+- [Butterfly 主题文档](https://butterfly.js.org/)
+- [NexT 主题文档](https://theme-next.js.org/)
+- [GitHub Pages 官方文档](https://docs.github.com/zh/pages)
+
+---
+
+## 总结
+
+恭喜你完成了 Hexo 博客的搭建！通过本指南，你学会了：
+
+- 安装 Node.js 和 Git 环境
+- 使用 Hexo 初始化项目、管理文章
+- 配置博客、安装并美化主题
+- 将博客免费部署到 GitHub Pages
+
+静态博客的优势在于其极致的速度和稳定性，且后期维护成本极低。现在你可以尽情享受写作的乐趣，并不断探索 Hexo 丰富的定制选项和插件，将你的博客打造成理想的样子！
+
+**开始你的创作之旅吧！** ✨
+
+---
+
+> 本指南最后更新：2025-04-18
