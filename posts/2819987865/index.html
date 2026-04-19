@@ -1,0 +1,774 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>算法的基本概述 | 我的博客</title><meta name="author" content="Abel Huang"><meta name="copyright" content="Abel Huang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前言今天来看一哈算法的相关概念。 算法的基本概述算法(algorithm)算法是指令的集合，是为解决特定问题而规定的一系列操作。它是明确定义的可计算过程，以一个数据集合作为输入，并产生一个数据集合作为输出。一个算法通常来说具有以下五个特性：  输入：一个算法应以待解决的问题的信息作为输入。 输出：输入对应指令集处理后得到的信息。 可行性：算法是可行的，即算法中的每一条指令都是可以实现的，均能在有限">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法的基本概述">
+<meta property="og:url" content="https://lonelyrookie.github.io/posts/2819987865/index.html">
+<meta property="og:site_name" content="我的博客">
+<meta property="og:description" content="前言今天来看一哈算法的相关概念。 算法的基本概述算法(algorithm)算法是指令的集合，是为解决特定问题而规定的一系列操作。它是明确定义的可计算过程，以一个数据集合作为输入，并产生一个数据集合作为输出。一个算法通常来说具有以下五个特性：  输入：一个算法应以待解决的问题的信息作为输入。 输出：输入对应指令集处理后得到的信息。 可行性：算法是可行的，即算法中的每一条指令都是可以实现的，均能在有限">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800">
+<meta property="article:published_time" content="2019-07-27T07:13:07.000Z">
+<meta property="article:modified_time" content="2026-04-19T07:59:16.354Z">
+<meta property="article:author" content="Abel Huang">
+<meta property="article:tag" content="算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "算法的基本概述",
+  "url": "https://lonelyrookie.github.io/posts/2819987865/",
+  "image": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800",
+  "datePublished": "2019-07-27T07:13:07.000Z",
+  "dateModified": "2026-04-19T07:59:16.354Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Abel Huang",
+      "url": "https://lonelyrookie.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/40121337?v=4"><link rel="canonical" href="https://lonelyrookie.github.io/posts/2819987865/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '算法的基本概述',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://avatars.githubusercontent.com/u/40121337?v=4" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的博客</span></a><a class="nav-page-title" href="/"><span class="site-name">算法的基本概述</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">算法的基本概述</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-07-27T07:13:07.000Z" title="发表于 2019-07-27 15:13:07">2019-07-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-04-19T07:59:16.354Z" title="更新于 2026-04-19 15:59:16">2026-04-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AE%97%E6%B3%95/">算法</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>今天来看一哈算法的相关概念。</p>
+<h2 id="算法的基本概述"><a href="#算法的基本概述" class="headerlink" title="算法的基本概述"></a>算法的基本概述</h2><h3 id="算法-algorithm"><a href="#算法-algorithm" class="headerlink" title="算法(algorithm)"></a>算法(algorithm)</h3><p>算法是指令的集合，是为解决特定问题而规定的一系列操作。<br>它是明确定义的可计算过程，以一个数据集合作为输入，并产生一个数据集合作为输出。<br>一个算法通常来说具有以下五个特性：</p>
+<ul>
+<li>输入：一个算法应以待解决的问题的信息作为输入。</li>
+<li>输出：输入对应指令集处理后得到的信息。</li>
+<li>可行性：算法是可行的，即算法中的每一条指令都是可以实现的，均能在有限的时间内完成。</li>
+<li>有穷性：算法执行的指令个数是有限的，每个指令又是在有限时间内完成的，因此整个算法也是在有限时间内可以结束的。</li>
+<li>确定性：算法对于特定的合法输入，其对应的输出是唯一的。即当算法从一个特定输入开始，多次执行同一指令集结果总是相同的。</li>
+</ul>
+<p>简单的说，<strong>算法就是计算机解题的过程</strong>。<br>在这个过程中，无论是形成解题思路还是编写程序，都是在实施某种算法。<br>前者是算法的逻辑形式，后者是算法的代码形式。</p>
+<pre><code>举例：如何求0+1+2+3+...10000=?
+算法1：依次相加  while do-while  for
+算法2：高斯解法：首尾相加*50    
+       或着梯度算法：(上底+下底)*高/2    (1+10000)*10000/2    
+       或者三角形算法：(底*高)/2   注：前面需要补零    100*101/2
+
+算法3：使用递归实现： sum(100) = sum(99)+100   sum(99)= sum(98)+99 .....   sum(2) = sum(1)+2   sum(1) = 1
+</code></pre>
+<h3 id="评价算法优劣的依据：复杂度（时间复杂度和空间复杂度）"><a href="#评价算法优劣的依据：复杂度（时间复杂度和空间复杂度）" class="headerlink" title="评价算法优劣的依据：复杂度（时间复杂度和空间复杂度）"></a>评价算法优劣的依据：复杂度（时间复杂度和空间复杂度）</h3><p>算法的复杂性体现在运行该算法时的计算机所需资源的多少上，计算机资源最重要的是时间和空间资源，因此复杂度分为时间和空间复杂度</p>
+<p>时间复杂度是指执行算法<code>所需要的计算工作量</code>；</p>
+<p>空间复杂度是指执行这个算法<code>所需要的内存空间</code>。</p>
+<h3 id="时间复杂度-Time-Complexity"><a href="#时间复杂度-Time-Complexity" class="headerlink" title="时间复杂度(Time Complexity)"></a>时间复杂度(Time Complexity)</h3><h4 id="时间频度"><a href="#时间频度" class="headerlink" title="时间频度"></a>时间频度</h4><p>一个算法执行所耗费的时间，从理论上是不能算出来的，必须上机运行测试才能知道。<br>但我们不可能也没有必要对每个算法都上机测试。</p>
+<p><strong>一个算法花费的时间与算法中语句的执行次数成正比例</strong>，哪个算法中语句执行次数多，它花费时间就多。</p>
+<p><strong>一个算法中的语句执行次数称为语句频度或时间频度，表示为T(n)，n表示问题的规模</strong></p>
+<h4 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h4><p>但有时我们想知道它变化时呈现什么规律，<strong>想知道问题的规模，而不是具体的次数，此时引入时间复杂度。</strong></p>
+<p><strong>一般情况下，算法中基本操作重复执行的次数是问题规模n的某个函数，用T(n)表示，<br>若有某个辅助函数f(n),使得当n趋近于无穷大时，T(n)&#x2F;f(n)的极限值为不等于零的常数，则称f(n)是T(n)的同数量级函数。<br>记作T(n)&#x3D;O(f(n)),称O(f(n)) 为算法的渐进时间复杂度，简称时间复杂度。</strong></p>
+<pre><code>T(n)=O(f(n))
+</code></pre>
+<p>或者说：<strong>时间复杂度就是时间频度去掉低阶项和首项常数。</strong></p>
+<p>注意：时间频度与时间复杂度是不同的，时间频度不同但时间复杂度可能相同。</p>
+<p>比如：<br>某两个算法的时间频度是 T(n) &#x3D; 100000n^2+10n+6    T(n) &#x3D; 10n^2+10n+6   T(n) &#x3D; n^2. &nbsp;&nbsp;&nbsp;&nbsp;但是时间复杂度都是 T(n) &#x3D; O（n^2）</p>
+<h4 id="最坏时间复杂度和平均时间复杂度"><a href="#最坏时间复杂度和平均时间复杂度" class="headerlink" title="最坏时间复杂度和平均时间复杂度"></a>最坏时间复杂度和平均时间复杂度</h4><p>最坏情况下的时间复杂度称最坏时间复杂度。<code>一般不特别说明，讨论的时间复杂度均是最坏情况下的时间复杂度</code>。<br>这样做的原因是：最坏情况下的时间复杂度是算法在任何输入实例上运行时间的上界，这就保证了算法的运行时间不会比任何更长。<br>在最坏情况下的时间复杂度为T(n)&#x3D;O(n)，它表示对于任何输入实例,该算法的运行时间不可能大于O(n)。</p>
+<p>平均时间复杂度是指所有可能的输入实例均以等概率出现的情况下，算法的期望运行时间。鉴于平均复杂度，第一，难计算；第二，有很多算法的平均情况和最差情况的复杂度是一样的。所以一般讨论最坏时间复杂度</p>
+<p>比如： 我要求你在字典里查同一个字，告诉我这个字在字典的那一页。<br>如果一页一页的翻，你需要多少时间呢？<br>最优的情况就是这个字在第一页，<br>最坏的情况就是这个字是整本字典的最后一个字。<br>所以即使我故意为难你，你也不会花费比找整本字典最后一个字还长的时间。<br>当然，此时聪明的你就会想用部首、笔画等去查，才不要傻乎乎的一页一页翻，<br>此时的你就会择优选择，因为此时你最坏得情况就是我给你部首笔画最多、除部首外笔画最多的一个超级复杂的一个字，但显然比翻整本字典快得多。</p>
+<h4 id="Ο、Ω、Θ符号"><a href="#Ο、Ω、Θ符号" class="headerlink" title="Ο、Ω、Θ符号"></a>Ο、Ω、Θ符号</h4><p>为了进一步说明算法的时间复杂度，我们定义 Ο、Ω、Θ符号。</p>
+<ul>
+<li>Ο 读音：big-oh、欧米可荣（大写）符号给出了算法时间复杂度的上界（最坏情况  &lt;&#x3D;），比如 T(n) &#x3D;O(n^2)</li>
+<li>Ω 读音：big omega、欧米伽（大写）符号给出了时间复杂度的下界（最好情况 &gt;&#x3D;），比如 T(n)&#x3D;Ω(n^2)</li>
+<li>Θ读音：theta、西塔 符号给出了算法时间复杂度的精确阶（最好和最坏是同一个阶  &#x3D;），比如 T(n) &#x3D;Θ(n^2)，既是上界也是下界，等于的意思。</li>
+</ul>
+<p>补充：</p>
+<ul>
+<li>ο，读音：small-oh、欧米可荣（小写）；表示上界，小于的意思。</li>
+<li>ω，读音：small omega、欧米伽（小写）；表示下界，大于的意思。</li>
+</ul>
+<p>大O符号是用于描述函数渐近行为的数学符号，更确切地说。<br>大Ω符号的定义与大O符号的定义类似，但主要区别是，大O符号表示函数在增长到一定程度时总小于一个特定函数的常数倍，大Ω符号则表示总大于，来描述一个函数数量级的渐近下界。<br>大Θ符号是大O符号和大Ω符号的结合。</p>
+<p>下面给出具体的数学定义:</p>
+<p>函数f(n)代表某一算法在输入大小为n的情况下的工作量（效率），则在n趋向很大的时候，我们将f(n)与另一行为已知的函数g(n)进行比较：</p>
+<ol>
+<li>如果 lim f(n)&#x2F;g(n) &#x3D; 0，则称f(n)在数量级上严格小于g(n)，记为f(n)&#x3D;o(g(n))。</li>
+<li>如果 lim f(n)&#x2F;g(n) &#x3D; ∞，则称f(n)在数量级上严格大于g(n)，记为f(n)&#x3D;ω(g(n))。</li>
+<li>如果  lim f(n)&#x2F;g(n) &#x3D; c，这里c为非0常数，则称f(n)在数量级上等于g(n)，即f(n)和g(n)是同一个数量级的函数，记为：f(n)&#x3D;Θ(g(n))。</li>
+<li>如果f(n)在数量级上小于或等于g(n)，则记为f(n)&#x3D;O(g(n))。</li>
+<li>如果f(n)在数量级上大于或等于g(n)，则记为f(n)&#x3D;Ω(g(n))。</li>
+<li>大O大Ω都是存在c，小o小w都是对于任意c</li>
+</ol>
+<h4 id="时间复杂度计算"><a href="#时间复杂度计算" class="headerlink" title="时间复杂度计算"></a>时间复杂度计算</h4><p>根本没有必要计算时间频度，即使计算处理还要忽略常量、低次幂和最高次幂的系数，所以可以采用如下简单方法：</p>
+<ol>
+<li>找出算法中的基本语句；算法中执行次数最多的那条语句就是基本语句，通常是最内层循环的循环体。</li>
+<li>计算基本语句的执行次数的数量级；只需计算基本语句执行次数的数量级，这就意味着只要保证基本语句执行次数的函数中的最高次幂正确即可，可以忽略所有低次幂和最高次幂的系数。这样能够简化算法分析，并且使注意力集中在最重要的一点上：增长率。</li>
+<li>用大Ο记号表示算法的时间性能。将基本语句执行次数的数量级放入大Ο记号中。</li>
+</ol>
+<h4 id="时间复杂度举例"><a href="#时间复杂度举例" class="headerlink" title="时间复杂度举例"></a>时间复杂度举例</h4><pre><code>1. 一个简单语句的时间复杂度为O(1)。
+int count=0;
+
+
+2. 100个简单语句的时间复杂度也为O(1)。（100是常数，不是趋向无穷大的n）
+int count=0; 
+
+常数的复杂度都是1
+
+
+3. 一个循环的时间复杂度为O(n)。
+int n=8, count=0;
+for (int i=1; i&lt;=n; i++)
+    count++;
+
+T(n)=O(n)
+
+
+4. 时间复杂度为O(log2 n)的循环语句。 
+
+int n=8, count=0;
+for (int i=1; i&lt;=n; i*=2)
+    count++;
+
+1   2   4   8   16  32  
+20  21  22  24   24  25 
+推到出公式：n = 2^i  由此指数公式变为对数公式： log2 n = i
+
+T(n) = log2 n
+T(n) = O(log2 n)
+
+当 n = 8 时，只需要执行3次
+
+5. 时间复杂度为O(n^2)的二重循环。
+int n=8, count=0;
+for (int i=1; i&lt;=100n; i++) 
+    for (int j=1; j&lt;=10n; j++)
+        count++;
+
+T(n)  = 100n*10n = 1000n^2
+T(n) = O(n^2)
+
+
+6. 时间复杂度为O(nlog2 n)的二重循环。
+int n=8, count=0;
+for (int i=1; i&lt;=n; i*=2)
+    for (int j=1; j&lt;=n; j++)
+        count++;
+
+T(n) = n * log2 n 
+O(n) = nlog2 n
+        
+7. 时间复杂度为O(n^2)的二重循环。
+int n=8, count=0;
+for (int i=1; i&lt;=n; i++)
+    for (int j=1; j&lt;=i; j++)
+        count++;
+
+当i=1时，count++语句需要执行1次
+i=2,执行2次
+i=3,执行3次
+...
+i=n,执行n次
+
+所以：
+1+2+3+4....+n=(1+n)*n/2 （时间梯度公式推导出）
+
+T(n) = 1+2+3+.....+n=(n+1)*n/2
+
+T(n) = O(n^2)
+</code></pre>
+<h4 id="常用的时间复杂度级别"><a href="#常用的时间复杂度级别" class="headerlink" title="常用的时间复杂度级别"></a>常用的时间复杂度级别</h4><pre><code>常数阶O(1) 
+对数阶O(log2 n)
+线性阶O(n)
+线性对数阶O(n*log2 n)
+平方阶O(n^2) 
+立方阶O(n^3)
+...
+k次方阶O(n^k)
+指数阶O(2^n)
+阶乘阶O(n!)
+</code></pre>
+<p>上面各种时间复杂度级别，执行效率越来越低。</p>
+<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/posts/2819987865/2019-07-28_144608.png" class="" title="时间复杂度级别">
+
+<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/posts/2819987865/2019-07-28_144742.png" class="" title="时间复杂度级别">
+
+<p>大家发现对数阶O(log2 n)和线性阶O(n)的效率差异了吗，当n&#x3D;10的8次方（1亿）时，执行此时一个是1亿次，一个是8次。所以编写算法时一定要注意时间复杂度的选择。</p>
+<h3 id="空间复杂度-Space-Complexity"><a href="#空间复杂度-Space-Complexity" class="headerlink" title="空间复杂度(Space Complexity)"></a>空间复杂度(Space Complexity)</h3><p>算法的存储量包括: &nbsp;&nbsp;&nbsp;<br>1．程序本身所占空间&nbsp;&nbsp;&nbsp;<br>2．输入数据所占空间&nbsp;&nbsp;&nbsp;<br>3．辅助变量所占空间</p>
+<p>输入数据所占空间只取决于问题本身，和算法无关，则只需要分析除输入和程序之外的辅助变量所占额外空间。</p>
+<p><strong>空间复杂度是对一个算法在运行过程中临时占用的存储空间大小的量度，一般也作为问题规模n的函数，以数量级形式给出，记作：<br>S(n) &#x3D; O(g(n))</strong></p>
+<p>空间复杂度分析：</p>
+<pre><code>1.
+int fun(int n)&#123;   
+    int i，j，k，s; 
+        s=0;
+        for (i=0;i&lt;=n;i++)           
+            for (j=0;j&lt;=i;j++)  	
+                    for (k=0;k&lt;=j;k++)     
+                        s++; 
+        return(s);
+&#125;
+S(n) = 4 只需要4个空间
+S(n) = O(1) 常数的复杂度为1
+
+由于算法中临时变量的个数与问题规模n无关，所以空间复杂度均为S(n)=O(1)。
+
+2. 
+void fun(int a[]，int n，int k) 
+//数组a共有n个元素
+&#123;   int i;
+    if (k==n-1)
+    for (i=0;i&lt;n;i++)　　
+        printf(“%d\n”，a[i]);  //执行n次
+    else
+    &#123;  for (i=k;i&lt;n;i++)
+        a[i]=a[i]+i*i;　　//执行n-k次
+    fun(a，n，k+1);
+    &#125;
+&#125; 
+此属于递归算法，每次调用本身都要分配空间，fun(a,n,0)的空间复杂度为O(n)。
+</code></pre>
+<p>注意：</p>
+<ol>
+<li>空间复杂度相比时间复杂度分析要少</li>
+<li>对于递归算法来说，代码一般都比较简短，算法本身所占用的存储空间较少，但运行时需要占用较多的临时工作单元；<br>若写成非递归算法，代码一般可能比较长，算法本身占用的存储空间较多，但运行时将可能需要较少的存储单元。</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lonelyrookie.github.io">Abel Huang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lonelyrookie.github.io/posts/2819987865/">https://lonelyrookie.github.io/posts/2819987865/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lonelyrookie.github.io" target="_blank">我的博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%AE%97%E6%B3%95/">算法</a></div><div class="post-share"><div class="social-share" data-image="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/170655318/" title="线性表"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">线性表</div></div><div class="info-2"><div class="info-item-1">前言下面几节都来认识线性表，模拟Java中的顺序存储结构和链式存储结构的实现。 线性表（linear list）线性表是n个类型相同数据元素的有限序列，通常记作（a 0 , a 1 , …a i-1 , a i , a i+1 …,a n-1 ）。 1.相同数据类型 在线性表的定义中，我们看到从a 0 到a n-1 的n个数据元素是具有相同属性的元素。比如说可以都是数字，例如(23, 14, 66, 5, 99)；也可以是字符，例如(A, B, C, … Z)；当然也可以是具有更复杂结构的数据元素，例如学生、商品、装备。相同数据类型意味着在内存中存储时，每个元素会占用相同的内存空间，便于后续的查询定位。 2.序列(顺序性) 在线性表的相邻数据元素之间存在着序偶关系，即a i-1 是a i 的直接前驱，则a i 是a i-1 的直接后续，同时a i 又是a i+1 的直接前驱，a i+1 是a i 的直接后续。唯一没有直接前驱的元素a 0 一端称为表头，唯一没有后续的元素a n-1 一端称为表尾。除了表头和表尾元素外，任何一个元素都有且仅有一个直接前驱和直接后继。 3.有限 线性表...</div></div></div></a><a class="pagination-related" href="/posts/2934605110/" title="数据结构的基本概述"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">数据结构的基本概述</div></div><div class="info-2"><div class="info-item-1">前言从今天开始，我们就来巩固一下数据结构和算法的基本知识。 数据结构的基本概述有哪些数据结构？线性表、栈、队列、（字符）串、数组、广义表、树、二叉树、图。重点是线性表、二叉树 什么是数据数据（data）是描述客观事物的数值、字符以及能输入机器且能被处理的各种符号集合。数据的含义非常广泛，除了通常的数值数据、字符、字符串是数据以外，声音、图像等一切可以输入计算机并能被处理的都是数据。例如:除了表示人的姓名、身高、体重等的字符、数字是数据，人的照片、指纹、三维模型、语音指令等也都是数据。 数据项数据项（data item）具有原子性，是不可分割的最小数据单位。如:描述学生相关信息的姓名、性别、学号等都是数据项；三维坐标中的每一维坐标值也是数据项。数据项具有原子性，是不可分割的最小单位。 数据元素数据元素（data element ）是数据的基本单位，是数据集合的个体，通常由若干个数据项组成，在计算机程序中通常作为一个整体来进行处理。例如:一条描述一位学生的完整信息的数据记录就是一个数据元素；空间中一点的三维坐标也可以是一个数据元素。 数据对象数据对象（data object ）是性质...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://avatars.githubusercontent.com/u/40121337?v=4" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Abel Huang</div><div class="author-info-description">热爱技术，热爱生活</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LonelyRookie"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/LonelyRookie" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:1782480783@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%97%E6%B3%95%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E8%BF%B0"><span class="toc-number">2.</span> <span class="toc-text">算法的基本概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%97%E6%B3%95-algorithm"><span class="toc-number">2.1.</span> <span class="toc-text">算法(algorithm)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%84%E4%BB%B7%E7%AE%97%E6%B3%95%E4%BC%98%E5%8A%A3%E7%9A%84%E4%BE%9D%E6%8D%AE%EF%BC%9A%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%88%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%92%8C%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%89"><span class="toc-number">2.2.</span> <span class="toc-text">评价算法优劣的依据：复杂度（时间复杂度和空间复杂度）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6-Time-Complexity"><span class="toc-number">2.3.</span> <span class="toc-text">时间复杂度(Time Complexity)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E9%A2%91%E5%BA%A6"><span class="toc-number">2.3.1.</span> <span class="toc-text">时间频度</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="toc-number">2.3.2.</span> <span class="toc-text">时间复杂度</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%80%E5%9D%8F%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%92%8C%E5%B9%B3%E5%9D%87%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="toc-number">2.3.3.</span> <span class="toc-text">最坏时间复杂度和平均时间复杂度</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%CE%9F%E3%80%81%CE%A9%E3%80%81%CE%98%E7%AC%A6%E5%8F%B7"><span class="toc-number">2.3.4.</span> <span class="toc-text">Ο、Ω、Θ符号</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E8%AE%A1%E7%AE%97"><span class="toc-number">2.3.5.</span> <span class="toc-text">时间复杂度计算</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E4%B8%BE%E4%BE%8B"><span class="toc-number">2.3.6.</span> <span class="toc-text">时间复杂度举例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E7%BA%A7%E5%88%AB"><span class="toc-number">2.3.7.</span> <span class="toc-text">常用的时间复杂度级别</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6-Space-Complexity"><span class="toc-number">2.4.</span> <span class="toc-text">空间复杂度(Space Complexity)</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/3632233997/" title="Hexo博客搭建指南"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hexo博客搭建指南"/></a><div class="content"><a class="title" href="/posts/3632233997/" title="Hexo博客搭建指南">Hexo博客搭建指南</a><time datetime="2026-04-19T06:12:04.000Z" title="发表于 2026-04-19 14:12:04">2026-04-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/1243066710/" title="Hello World"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hello World"/></a><div class="content"><a class="title" href="/posts/1243066710/" title="Hello World">Hello World</a><time datetime="2026-04-19T06:10:47.705Z" title="发表于 2026-04-19 14:10:47">2026-04-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/266339929/" title="IDEA编译Spring源码"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="IDEA编译Spring源码"/></a><div class="content"><a class="title" href="/posts/266339929/" title="IDEA编译Spring源码">IDEA编译Spring源码</a><time datetime="2020-10-31T07:13:07.000Z" title="发表于 2020-10-31 15:13:07">2020-10-31</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/491356617/" title="TreeSet"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="TreeSet"/></a><div class="content"><a class="title" href="/posts/491356617/" title="TreeSet">TreeSet</a><time datetime="2020-10-28T07:13:07.000Z" title="发表于 2020-10-28 15:13:07">2020-10-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/914191635/" title="CopyOnWriteArrayList"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CopyOnWriteArrayList"/></a><div class="content"><a class="title" href="/posts/914191635/" title="CopyOnWriteArrayList">CopyOnWriteArrayList</a><time datetime="2020-10-27T07:13:07.000Z" title="发表于 2020-10-27 15:13:07">2020-10-27</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Abel Huang</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://github.com/LonelyRookie" target="_blank">Follow me on GitHub</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? '' : ''
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>
