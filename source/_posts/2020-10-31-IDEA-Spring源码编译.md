@@ -47,13 +47,13 @@ maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter'}
 
 
 
-![](/images/2020-10-31/2020-10-31_002548.png)
+{% asset_img 2020-10-31_002548.png  %}
 
 
 
 2.修改源码根目录的settings.gradle文件，增加阿里云镜像库
 
-![](/images/2020-10-31/2020-10-31_003000.png)
+{% asset_img 2020-10-31_003000.png  %}
 
 
 
@@ -61,27 +61,27 @@ maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter'}
 
 将下载的spring源码导入IDEA：
 
-![](/images/2020-10-31/2020-10-30_194858.png)
+{% asset_img 2020-10-30_194858.png  %}
 
 
 
 等待spring源码依赖jar包下载完成：下载时间有点长
 
-![](/images/2020-10-31/2020-10-30_194938.png)
+{% asset_img 2020-10-30_194938.png  %}
 
 
 
 下载编译完成后出现一下错误，**需要将spring 加入本地git版本控制后**，才不会出现该错误。
 
-![](/images/2020-10-31/2020-10-30_195145.png)
+{% asset_img 2020-10-30_195145.png  %}
 
 
 
 spring 加入本地git版本控制：
 
-![](/images/2020-10-31/2020-10-30_195255.png)
+{% asset_img 2020-10-30_195255.png  %}
 
-![](/images/2020-10-31/2020-10-30_195709.png)
+{% asset_img 2020-10-30_195709.png  %}
 
 
 
@@ -89,7 +89,7 @@ spring 加入本地git版本控制：
 
 spring源码的根路径下有一个import-into-idea.md的文件，介绍导入spring源码的步骤
 
-![](/images/2020-10-31/2020-10-31_004940.png)
+{% asset_img 2020-10-31_004940.png  %}
 
 
 
@@ -105,7 +105,7 @@ gradlew :spring-oxm:compileTestJava
 
 执行完成后如下：报错的 Process 'command 'git'' finished with non-zero exit value 128 不影响，解决该错误需要将spring 加入本地git版本控制
 
-![](/images/2020-10-31/2020-10-30_211952.png)
+{% asset_img 2020-10-30_211952.png  %}
 
 
 
@@ -113,29 +113,29 @@ gradlew :spring-oxm:compileTestJava
 
 排除spring-aspects模块：需要安装其他的jar包，这里为了解决报错就排除掉
 
-![](/images/2020-10-31/2020-10-31_010421.png)
+{% asset_img 2020-10-31_010421.png  %}
 
 
 
-![](/images/2020-10-31/2020-10-31_010341.png)
+{% asset_img 2020-10-31_010341.png  %}
 
 
 
 新建测试module进行测试：
 
-![](/images/2020-10-31/2020-10-30_212712.png)
+{% asset_img 2020-10-30_212712.png  %}
 
 
 
 
 
-![](/images/2020-10-31/2020-10-30_212825.png)
+{% asset_img 2020-10-30_212825.png  %}
 
 
 
 
 
-![](/images/2020-10-31/2020-10-31_011243.png)
+{% asset_img 2020-10-31_011243.png  %}
 
 
 
@@ -250,7 +250,7 @@ UserService...
 
 运行时，需要改一下如下配置：
 
-![](/images/2020-10-31/2020-10-30_214949.png)
+{% asset_img 2020-10-30_214949.png  %}
 
 
 
