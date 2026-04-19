@@ -263,10 +263,16 @@ google_analytics:
 # 搜索功能
 # --------------------------------------
 search:
-  enable: true
-  path: search.xml
-  field: post
-  content: true
+  use: local_search
+  placeholder: 搜索文章...
+
+  local_search:
+    preload: false
+    top_n_per_article: 1
+    unescape: false
+    pagination:
+      enable: false
+      hitsPerPage: 8
 
 # --------------------------------------
 # 数学公式
