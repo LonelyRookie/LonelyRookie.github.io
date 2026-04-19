@@ -1,5 +1,5 @@
 ---
-title: 2019-06-15-vscode的debug的基本使用
+title: vscode的debug的基本使用
 abbrlink: 508415364
 date: 2019-06-15 14:53:43
 tags:

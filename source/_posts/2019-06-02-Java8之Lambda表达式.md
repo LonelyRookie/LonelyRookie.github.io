@@ -3,9 +3,9 @@ title: Java8之Lambda表达式
 abbrlink: 3392526762
 date: 2019-06-02 14:21:07
 tags:
- - Lambda
+ - java
 categories:
-  - Java
+  - java
 ---
 
 # Lambda表达式介绍
