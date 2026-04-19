@@ -1,11 +1,12 @@
 ---
 title: andrej-karpathy-skills入门指南
-date: 2026-04-19 22:09:35
 tags:
   - AI工具
   - Claude Code
 categories:
   - AI工具
+abbrlink: 1085508936
+date: 2026-04-19 22:09:35
 ---
 
 ## 简介
