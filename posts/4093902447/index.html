@@ -1,0 +1,1173 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>OpenSpec入门指南：轻量级规格驱动开发框架 | 我的博客</title><meta name="author" content="Abel Huang"><meta name="copyright" content="Abel Huang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="简介OpenSpec 是一个轻量级的规格驱动开发（Spec-Driven Development, SDD）框架，专为 AI 编码助手设计。  项目数据：42K+ GitHub Stars | 60+ Contributors | MIT 开源 | TypeScript  为什么需要 OpenSpec？AI 编码助手很强大，但当需求只存在于聊天历史中时，它们就变得不可预测。OpenSpec 添加了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenSpec入门指南：轻量级规格驱动开发框架">
+<meta property="og:url" content="https://lonelyrookie.github.io/posts/4093902447/index.html">
+<meta property="og:site_name" content="我的博客">
+<meta property="og:description" content="简介OpenSpec 是一个轻量级的规格驱动开发（Spec-Driven Development, SDD）框架，专为 AI 编码助手设计。  项目数据：42K+ GitHub Stars | 60+ Contributors | MIT 开源 | TypeScript  为什么需要 OpenSpec？AI 编码助手很强大，但当需求只存在于聊天历史中时，它们就变得不可预测。OpenSpec 添加了">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800">
+<meta property="article:published_time" content="2026-04-26T16:30:00.000Z">
+<meta property="article:modified_time" content="2026-04-26T16:54:02.585Z">
+<meta property="article:author" content="Abel Huang">
+<meta property="article:tag" content="AI工具">
+<meta property="article:tag" content="Claude Code">
+<meta property="article:tag" content="Spec-Driven Development">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "OpenSpec入门指南：轻量级规格驱动开发框架",
+  "url": "https://lonelyrookie.github.io/posts/4093902447/",
+  "image": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800",
+  "datePublished": "2026-04-26T16:30:00.000Z",
+  "dateModified": "2026-04-26T16:54:02.585Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Abel Huang",
+      "url": "https://lonelyrookie.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/40121337?v=4"><link rel="canonical" href="https://lonelyrookie.github.io/posts/4093902447/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'OpenSpec入门指南：轻量级规格驱动开发框架',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://avatars.githubusercontent.com/u/40121337?v=4" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">33</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">13</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的博客</span></a><a class="nav-page-title" href="/"><span class="site-name">OpenSpec入门指南：轻量级规格驱动开发框架</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">OpenSpec入门指南：轻量级规格驱动开发框架</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-04-26T16:30:00.000Z" title="发表于 2026-04-27 00:30:00">2026-04-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-04-26T16:54:02.585Z" title="更新于 2026-04-27 00:54:02">2026-04-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI%E5%B7%A5%E5%85%B7/">AI工具</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI%E5%B7%A5%E5%85%B7/Spec-Driven-Development/">Spec-Driven Development</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a target="_blank" rel="noopener" href="https://github.com/Fission-AI/OpenSpec">OpenSpec</a> 是一个轻量级的规格驱动开发（Spec-Driven Development, SDD）框架，专为 AI 编码助手设计。</p>
+<blockquote>
+<p><strong>项目数据</strong>：42K+ GitHub Stars | 60+ Contributors | MIT 开源 | TypeScript</p>
+</blockquote>
+<h3 id="为什么需要-OpenSpec？"><a href="#为什么需要-OpenSpec？" class="headerlink" title="为什么需要 OpenSpec？"></a>为什么需要 OpenSpec？</h3><p>AI 编码助手很强大，但当需求只存在于聊天历史中时，它们就变得不可预测。OpenSpec 添加了一个轻量级的规格层，让你在编写任何代码之前就与 AI 达成一致。</p>
+<p><strong>核心问题</strong>：</p>
+<ul>
+<li>AI 输出与你期望不符</li>
+<li>需求模糊导致实现模糊</li>
+<li>聊天历史中的上下文丢失</li>
+<li>团队协作时意图传递困难</li>
+</ul>
+<p><strong>OpenSpec 的解决方案</strong>：</p>
+<ul>
+<li><strong>先同意再构建</strong> — 人类和 AI 在编写代码之前对齐规格</li>
+<li><strong>保持组织</strong> — 每个变更都有自己的文件夹，包含提案、规格、设计和任务</li>
+<li><strong>流畅工作</strong> — 随时更新任何产物，没有刚性阶段门槛</li>
+<li><strong>使用你的工具</strong> — 通过斜杠命令支持 25+ AI 助手</li>
+</ul>
+<h3 id="核心理念"><a href="#核心理念" class="headerlink" title="核心理念"></a>核心理念</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">→ fluid not rigid        （流畅而非僵化）</span><br><span class="line">→ iterative not waterfall（迭代而非瀑布）</span><br><span class="line">→ easy not complex       （简单而非复杂）</span><br><span class="line">→ built for brownfield not just greenfield（为棕地构建，而非仅绿地）</span><br></pre></td></tr></table></figure>
+
+<h4 id="为什么这些理念很重要"><a href="#为什么这些理念很重要" class="headerlink" title="为什么这些理念很重要"></a>为什么这些理念很重要</h4><p><strong>流畅而非僵化</strong>：传统规格系统将你锁定在阶段中：先计划，再实现，然后完成。OpenSpec 更灵活 — 你可以按任何合理的顺序创建产物。</p>
+<p><strong>迭代而非瀑布</strong>：需求会变化，理解会加深。开始时看似好的方法在看到代码库后可能站不住脚。OpenSpec 拥抱这一现实。</p>
+<p><strong>简单而非复杂</strong>：一些规格框架需要大量设置、僵化格式或重量级流程。OpenSpec 不妨碍你。几秒钟初始化，立即开始工作。</p>
+<p><strong>棕地优先</strong>：大多数软件工作不是从零构建 — 而是修改现有系统。OpenSpec 的增量方法使指定对现有行为的修改变得容易。</p>
+<hr>
+<h2 id="快速入门-5分钟"><a href="#快速入门-5分钟" class="headerlink" title="快速入门 (5分钟)"></a>快速入门 (5分钟)</h2><h3 id="系统要求"><a href="#系统要求" class="headerlink" title="系统要求"></a>系统要求</h3><ul>
+<li>Node.js 20.19.0 或更高版本</li>
+<li>支持的 AI 编码助手</li>
+</ul>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 全局安装（推荐）</span></span><br><span class="line">npm install -g @fission-ai/openspec@latest</span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证安装</span></span><br><span class="line">openspec --version</span><br></pre></td></tr></table></figure>
+
+<h3 id="初始化项目"><a href="#初始化项目" class="headerlink" title="初始化项目"></a>初始化项目</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入项目目录</span></span><br><span class="line"><span class="built_in">cd</span> your-project</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化 OpenSpec</span></span><br><span class="line">openspec init</span><br></pre></td></tr></table></figure>
+
+<h3 id="开始使用"><a href="#开始使用" class="headerlink" title="开始使用"></a>开始使用</h3><p>告诉你的 AI：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/opsx:propose &quot;your idea&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="启用扩展工作流"><a href="#启用扩展工作流" class="headerlink" title="启用扩展工作流"></a>启用扩展工作流</h3><p>如果需要扩展工作流命令（<code>/opsx:new</code>、<code>/opsx:continue</code>、<code>/opsx:ff</code>、<code>/opsx:verify</code>、<code>/opsx:sync</code>、<code>/opsx:bulk-archive</code>、<code>/opsx:onboard</code>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 配置工作流配置文件</span></span><br><span class="line">openspec config profile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 应用更新</span></span><br><span class="line">openspec update</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h2><h3 id="大局观"><a href="#大局观" class="headerlink" title="大局观"></a>大局观</h3><p>OpenSpec 将你的工作组织成两个主要区域：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────────────┐</span><br><span class="line">│ openspec/                                                       │</span><br><span class="line">│                                                                 │</span><br><span class="line">│ ┌─────────────────────┐   ┌──────────────────────────────┐     │</span><br><span class="line">│ │ specs/              │   │ changes/                     │     │</span><br><span class="line">│ │                     │   │                              │     │</span><br><span class="line">│ │ Source of truth     │◄──│ Proposed modifications       │     │</span><br><span class="line">│ │ How your system     │   │ Each change = one folder     │     │</span><br><span class="line">│ │ currently works     │   │ Contains artifacts + deltas  │     │</span><br><span class="line">│ │                     │   │                              │     │</span><br><span class="line">│ └─────────────────────┘   └──────────────────────────────┘     │</span><br><span class="line">│                                                                 │</span><br><span class="line">└─────────────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<p><strong>Specs（规格）</strong> 是真实来源 — 它们描述系统当前的行为。</p>
+<p><strong>Changes（变更）</strong> 是建议的修改 — 它们存在于单独的文件夹中，直到你准备好合并它们。</p>
+<h3 id="Specs（规格）"><a href="#Specs（规格）" class="headerlink" title="Specs（规格）"></a>Specs（规格）</h3><p>规格使用结构化的需求和场景描述系统的行为。</p>
+<h4 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">openspec/specs/</span><br><span class="line">├── auth/</span><br><span class="line">│   └── spec.md          # 认证行为</span><br><span class="line">├── payments/</span><br><span class="line">│   └── spec.md          # 支付处理</span><br><span class="line">├── notifications/</span><br><span class="line">│   └── spec.md          # 通知系统</span><br><span class="line">└── ui/</span><br><span class="line">    └── spec.md          # UI 行为和主题</span><br></pre></td></tr></table></figure>
+
+<p>按领域组织规格 — 对系统有意义的逻辑分组。常见模式：</p>
+<ul>
+<li><strong>按功能区域</strong>：<code>auth/</code>、<code>payments/</code>、<code>search/</code></li>
+<li><strong>按组件</strong>：<code>api/</code>、<code>frontend/</code>、<code>workers/</code></li>
+<li><strong>按限界上下文</strong>：<code>ordering/</code>、<code>fulfillment/</code>、<code>inventory/</code></li>
+</ul>
+<h4 id="规格格式"><a href="#规格格式" class="headerlink" title="规格格式"></a>规格格式</h4><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># Auth Specification</span></span><br><span class="line"></span><br><span class="line"><span class="section">## Purpose</span></span><br><span class="line">Authentication and session management for the application.</span><br><span class="line"></span><br><span class="line"><span class="section">## Requirements</span></span><br><span class="line"></span><br><span class="line"><span class="section">### Requirement: User Authentication</span></span><br><span class="line">The system SHALL issue a JWT token upon successful login.</span><br><span class="line"></span><br><span class="line"><span class="section">#### Scenario: Valid credentials</span></span><br><span class="line"><span class="bullet">-</span> GIVEN a user with valid credentials</span><br><span class="line"><span class="bullet">-</span> WHEN the user submits login form</span><br><span class="line"><span class="bullet">-</span> THEN a JWT token is returned</span><br><span class="line"><span class="bullet">-</span> AND the user is redirected to dashboard</span><br><span class="line"></span><br><span class="line"><span class="section">#### Scenario: Invalid credentials</span></span><br><span class="line"><span class="bullet">-</span> GIVEN invalid credentials</span><br><span class="line"><span class="bullet">-</span> WHEN the user submits login form</span><br><span class="line"><span class="bullet">-</span> THEN an error message is displayed</span><br><span class="line"><span class="bullet">-</span> AND no token is issued</span><br><span class="line"></span><br><span class="line"><span class="section">### Requirement: Session Expiration</span></span><br><span class="line">The system MUST expire sessions after 30 minutes of inactivity.</span><br><span class="line"></span><br><span class="line"><span class="section">#### Scenario: Idle timeout</span></span><br><span class="line"><span class="bullet">-</span> GIVEN an authenticated session</span><br><span class="line"><span class="bullet">-</span> WHEN 30 minutes pass without activity</span><br><span class="line"><span class="bullet">-</span> THEN the session is invalidated</span><br><span class="line"><span class="bullet">-</span> AND the user must re-authenticate</span><br></pre></td></tr></table></figure>
+
+<h4 id="关键元素"><a href="#关键元素" class="headerlink" title="关键元素"></a>关键元素</h4><table>
+<thead>
+<tr>
+<th>元素</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>## Purpose</code></td>
+<td>此规格领域的高级描述</td>
+</tr>
+<tr>
+<td><code>### Requirement:</code></td>
+<td>系统必须具有的特定行为</td>
+</tr>
+<tr>
+<td><code>#### Scenario:</code></td>
+<td>需求的具体示例</td>
+</tr>
+<tr>
+<td>SHALL&#x2F;MUST&#x2F;SHOULD</td>
+<td>RFC 2119 关键字，指示需求强度</td>
+</tr>
+</tbody></table>
+<h4 id="RFC-2119-关键字"><a href="#RFC-2119-关键字" class="headerlink" title="RFC 2119 关键字"></a>RFC 2119 关键字</h4><ul>
+<li><strong>MUST&#x2F;SHALL</strong> — 绝对要求</li>
+<li><strong>SHOULD</strong> — 推荐，但存在例外</li>
+<li><strong>MAY</strong> — 可选</li>
+</ul>
+<h3 id="Changes（变更）"><a href="#Changes（变更）" class="headerlink" title="Changes（变更）"></a>Changes（变更）</h3><p>变更是对系统的建议修改，打包为一个文件夹，包含理解和实现它所需的一切。</p>
+<h4 id="变更结构"><a href="#变更结构" class="headerlink" title="变更结构"></a>变更结构</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">openspec/changes/add-dark-mode/</span><br><span class="line">├── proposal.md           # 为什么和做什么</span><br><span class="line">├── design.md             # 怎么做（技术方法）</span><br><span class="line">├── tasks.md              # 实现检查清单</span><br><span class="line">├── .openspec.yaml        # 变更元数据（可选）</span><br><span class="line">└── specs/                # 增量规格</span><br><span class="line">    └── ui/</span><br><span class="line">        └── spec.md       # ui/spec.md 中的变化</span><br></pre></td></tr></table></figure>
+
+<p>每个变更都是自包含的。它包含：</p>
+<ul>
+<li><strong>Artifacts（产物）</strong> — 捕获意图、设计和任务的文档</li>
+<li><strong>Delta specs（增量规格）</strong> — 正在添加、修改或删除的规格</li>
+<li><strong>Metadata（元数据）</strong> — 此特定变更的可选配置</li>
+</ul>
+<h4 id="为什么变更是文件夹"><a href="#为什么变更是文件夹" class="headerlink" title="为什么变更是文件夹"></a>为什么变更是文件夹</h4><ol>
+<li><strong>一切在一起</strong> — 提案、设计、任务和规格在一个地方</li>
+<li><strong>并行工作</strong> — 多个变更可以同时存在而不冲突</li>
+<li><strong>清晰历史</strong> — 归档时，变更移动到 <code>changes/archive/</code>，保留完整上下文</li>
+<li><strong>易于审查</strong> — 变更文件夹易于审查</li>
+</ol>
+<h3 id="Artifacts（产物）"><a href="#Artifacts（产物）" class="headerlink" title="Artifacts（产物）"></a>Artifacts（产物）</h3><p>产物是变更中指导工作的文档。</p>
+<h4 id="产物流程"><a href="#产物流程" class="headerlink" title="产物流程"></a>产物流程</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">proposal ──────► specs ──────► design ──────► tasks ──────► implement</span><br><span class="line">    │               │             │              │</span><br><span class="line">   why            what           how          steps</span><br><span class="line"> + scope        changes       approach      to take</span><br></pre></td></tr></table></figure>
+
+<p>产物相互构建。每个产物为下一个提供上下文。</p>
+<h4 id="Proposal（提案）"><a href="#Proposal（提案）" class="headerlink" title="Proposal（提案）"></a>Proposal（提案）</h4><p>提案在高级别捕获<strong>意图</strong>、<strong>范围</strong>和<strong>方法</strong>。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># Proposal: Add Dark Mode</span></span><br><span class="line"></span><br><span class="line"><span class="section">## Intent</span></span><br><span class="line">Users have requested a dark mode option to reduce eye strain</span><br><span class="line">during nighttime usage and match system preferences.</span><br><span class="line"></span><br><span class="line"><span class="section">## Scope</span></span><br><span class="line">In scope:</span><br><span class="line"><span class="bullet">-</span> Theme toggle in settings</span><br><span class="line"><span class="bullet">-</span> System preference detection</span><br><span class="line"><span class="bullet">-</span> Persist preference in localStorage</span><br><span class="line"></span><br><span class="line">Out of scope:</span><br><span class="line"><span class="bullet">-</span> Custom color themes (future work)</span><br><span class="line"><span class="bullet">-</span> Per-page theme overrides</span><br><span class="line"></span><br><span class="line"><span class="section">## Approach</span></span><br><span class="line">Use CSS custom properties for theming with a React context</span><br><span class="line">for state management. Detect system preference on first load,</span><br><span class="line">allow manual override.</span><br></pre></td></tr></table></figure>
+
+<h4 id="Design（设计）"><a href="#Design（设计）" class="headerlink" title="Design（设计）"></a>Design（设计）</h4><p>设计捕获<strong>技术方法</strong>和<strong>架构决策</strong>。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># Design: Add Dark Mode</span></span><br><span class="line"></span><br><span class="line"><span class="section">## Technical Approach</span></span><br><span class="line">Theme state managed via React Context to avoid prop drilling.</span><br><span class="line">CSS custom properties enable runtime switching without class toggling.</span><br><span class="line"></span><br><span class="line"><span class="section">## Architecture Decisions</span></span><br><span class="line"></span><br><span class="line"><span class="section">### Decision: Context over Redux</span></span><br><span class="line">Using React Context for theme state because:</span><br><span class="line"><span class="bullet">-</span> Simple binary state (light/dark)</span><br><span class="line"><span class="bullet">-</span> No complex state transitions</span><br><span class="line"><span class="bullet">-</span> Avoids adding Redux dependency</span><br><span class="line"></span><br><span class="line"><span class="section">### Decision: CSS Custom Properties</span></span><br><span class="line">Using CSS variables instead of CSS-in-JS because:</span><br><span class="line"><span class="bullet">-</span> Works with existing stylesheet</span><br><span class="line"><span class="bullet">-</span> No runtime overhead</span><br><span class="line"><span class="bullet">-</span> Browser-native solution</span><br><span class="line"></span><br><span class="line"><span class="section">## File Changes</span></span><br><span class="line"><span class="bullet">-</span> <span class="code">`src/contexts/ThemeContext.tsx`</span> (new)</span><br><span class="line"><span class="bullet">-</span> <span class="code">`src/components/ThemeToggle.tsx`</span> (new)</span><br><span class="line"><span class="bullet">-</span> <span class="code">`src/styles/globals.css`</span> (modified)</span><br></pre></td></tr></table></figure>
+
+<h4 id="Tasks（任务）"><a href="#Tasks（任务）" class="headerlink" title="Tasks（任务）"></a>Tasks（任务）</h4><p>任务是<strong>实现检查清单</strong> — 带复选框的具体步骤。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># Tasks</span></span><br><span class="line"></span><br><span class="line"><span class="section">## 1. Theme Infrastructure</span></span><br><span class="line"><span class="bullet">-</span> [ ] 1.1 Create ThemeContext with light/dark state</span><br><span class="line"><span class="bullet">-</span> [ ] 1.2 Add CSS custom properties for colors</span><br><span class="line"><span class="bullet">-</span> [ ] 1.3 Implement localStorage persistence</span><br><span class="line"><span class="bullet">-</span> [ ] 1.4 Add system preference detection</span><br><span class="line"></span><br><span class="line"><span class="section">## 2. UI Components</span></span><br><span class="line"><span class="bullet">-</span> [ ] 2.1 Create ThemeToggle component</span><br><span class="line"><span class="bullet">-</span> [ ] 2.2 Add toggle to settings page</span><br><span class="line"><span class="bullet">-</span> [ ] 2.3 Update Header to include quick toggle</span><br><span class="line"></span><br><span class="line"><span class="section">## 3. Styling</span></span><br><span class="line"><span class="bullet">-</span> [ ] 3.1 Define dark theme color palette</span><br><span class="line"><span class="bullet">-</span> [ ] 3.2 Update components to use CSS variables</span><br><span class="line"><span class="bullet">-</span> [ ] 3.3 Test contrast ratios for accessibility</span><br></pre></td></tr></table></figure>
+
+<h3 id="Delta-Specs（增量规格）"><a href="#Delta-Specs（增量规格）" class="headerlink" title="Delta Specs（增量规格）"></a>Delta Specs（增量规格）</h3><p>增量规格是使 OpenSpec 适用于棕地开发的关键概念。它们描述<strong>正在变化的内容</strong>，而不是重述整个规格。</p>
+<h4 id="格式"><a href="#格式" class="headerlink" title="格式"></a>格式</h4><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># Delta for Auth</span></span><br><span class="line"></span><br><span class="line"><span class="section">## ADDED Requirements</span></span><br><span class="line"></span><br><span class="line"><span class="section">### Requirement: Two-Factor Authentication</span></span><br><span class="line">The system MUST support TOTP-based two-factor authentication.</span><br><span class="line"></span><br><span class="line"><span class="section">#### Scenario: 2FA enrollment</span></span><br><span class="line"><span class="bullet">-</span> GIVEN a user without 2FA enabled</span><br><span class="line"><span class="bullet">-</span> WHEN the user enables 2FA in settings</span><br><span class="line"><span class="bullet">-</span> THEN a QR code is displayed for authenticator app setup</span><br><span class="line"><span class="bullet">-</span> AND the user must verify with a code before activation</span><br><span class="line"></span><br><span class="line"><span class="section">## MODIFIED Requirements</span></span><br><span class="line"></span><br><span class="line"><span class="section">### Requirement: Session Expiration</span></span><br><span class="line">The system MUST expire sessions after 15 minutes of inactivity.</span><br><span class="line">(Previously: 30 minutes)</span><br><span class="line"></span><br><span class="line"><span class="section">## REMOVED Requirements</span></span><br><span class="line"></span><br><span class="line"><span class="section">### Requirement: Remember Me</span></span><br><span class="line">(Deprecated in favor of 2FA. Users should re-authenticate each session.)</span><br></pre></td></tr></table></figure>
+
+<h4 id="增量部分"><a href="#增量部分" class="headerlink" title="增量部分"></a>增量部分</h4><table>
+<thead>
+<tr>
+<th>部分</th>
+<th>含义</th>
+<th>归档时发生什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>## ADDED Requirements</code></td>
+<td>新行为</td>
+<td>追加到主规格</td>
+</tr>
+<tr>
+<td><code>## MODIFIED Requirements</code></td>
+<td>更改的行为</td>
+<td>替换现有需求</td>
+</tr>
+<tr>
+<td><code>## REMOVED Requirements</code></td>
+<td>弃用的行为</td>
+<td>从主规格删除</td>
+</tr>
+</tbody></table>
+<h4 id="为什么用增量而非完整规格"><a href="#为什么用增量而非完整规格" class="headerlink" title="为什么用增量而非完整规格"></a>为什么用增量而非完整规格</h4><p><strong>清晰</strong>：增量准确显示正在变化的内容。</p>
+<p><strong>避免冲突</strong>：两个变更可以触及同一规格文件而不冲突，只要它们修改不同的需求。</p>
+<p><strong>审查效率</strong>：审查者看到变更，而非未更改的上下文。</p>
+<p><strong>棕地适配</strong>：大多数工作修改现有行为。增量使修改成为一等公民。</p>
+<hr>
+<h2 id="OPSX-工作流"><a href="#OPSX-工作流" class="headerlink" title="OPSX 工作流"></a>OPSX 工作流</h2><p>OPSX 是 OpenSpec 的标准工作流。它是一个<strong>流畅、迭代的工作流</strong>，没有刚性阶段 — 只有你可以随时采取的操作。</p>
+<h3 id="Core-工作流（默认）"><a href="#Core-工作流（默认）" class="headerlink" title="Core 工作流（默认）"></a>Core 工作流（默认）</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/opsx:propose</code></td>
+<td>一步创建变更并生成规划产物（默认快速路径）</td>
+</tr>
+<tr>
+<td><code>/opsx:explore</code></td>
+<td>思考想法、调查问题、澄清需求</td>
+</tr>
+<tr>
+<td><code>/opsx:apply</code></td>
+<td>实现任务，根据需要更新产物</td>
+</tr>
+<tr>
+<td><code>/opsx:archive</code></td>
+<td>完成后归档</td>
+</tr>
+</tbody></table>
+<h3 id="Expanded-工作流"><a href="#Expanded-工作流" class="headerlink" title="Expanded 工作流"></a>Expanded 工作流</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/opsx:new</code></td>
+<td>启动新的变更脚手架</td>
+</tr>
+<tr>
+<td><code>/opsx:continue</code></td>
+<td>创建下一个产物</td>
+</tr>
+<tr>
+<td><code>/opsx:ff</code></td>
+<td>快进规划产物</td>
+</tr>
+<tr>
+<td><code>/opsx:verify</code></td>
+<td>根据产物验证实现</td>
+</tr>
+<tr>
+<td><code>/opsx:sync</code></td>
+<td>将增量规格同步到主规格（可选）</td>
+</tr>
+<tr>
+<td><code>/opsx:bulk-archive</code></td>
+<td>批量归档多个已完成的变更</td>
+</tr>
+<tr>
+<td><code>/opsx:onboard</code></td>
+<td>端到端变更的引导式演练</td>
+</tr>
+</tbody></table>
+<h3 id="工作流对比"><a href="#工作流对比" class="headerlink" title="工作流对比"></a>工作流对比</h3><table>
+<thead>
+<tr>
+<th>方面</th>
+<th>Legacy (<code>/openspec:proposal</code>)</th>
+<th>OPSX (<code>/opsx:*</code>)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>结构</strong></td>
+<td>一个大提案文档</td>
+<td>具有依赖关系的离散产物</td>
+</tr>
+<tr>
+<td><strong>工作流</strong></td>
+<td>线性阶段：plan → implement → archive</td>
+<td>流畅操作 — 随时做任何事</td>
+</tr>
+<tr>
+<td><strong>迭代</strong></td>
+<td>回退很尴尬</td>
+<td>随着学习更新产物</td>
+</tr>
+<tr>
+<td><strong>定制</strong></td>
+<td>固定结构</td>
+<td>模式驱动（定义自己的产物）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="实战示例"><a href="#实战示例" class="headerlink" title="实战示例"></a>实战示例</h2><h3 id="示例：添加暗色模式"><a href="#示例：添加暗色模式" class="headerlink" title="示例：添加暗色模式"></a>示例：添加暗色模式</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">You: /opsx:propose add-dark-mode</span><br><span class="line">AI:  Created openspec/changes/add-dark-mode/</span><br><span class="line">     ✓ proposal.md — why we&#x27;re doing this, what&#x27;s changing</span><br><span class="line">     ✓ specs/       — requirements and scenarios</span><br><span class="line">     ✓ design.md    — technical approach</span><br><span class="line">     ✓ tasks.md     — implementation checklist</span><br><span class="line">     Ready for implementation!</span><br><span class="line"></span><br><span class="line">You: /opsx:apply</span><br><span class="line">AI:  Implementing tasks...</span><br><span class="line">     ✓ 1.1 Add theme context provider</span><br><span class="line">     ✓ 1.2 Create toggle component</span><br><span class="line">     ✓ 2.1 Add CSS variables</span><br><span class="line">     ✓ 2.2 Wire up localStorage</span><br><span class="line">     All tasks complete!</span><br><span class="line"></span><br><span class="line">You: /opsx:archive</span><br><span class="line">AI:  Archived to openspec/changes/archive/2025-01-23-add-dark-mode/</span><br><span class="line">     Specs updated. Ready for the next feature.</span><br></pre></td></tr></table></figure>
+
+<h3 id="示例：添加”记住我”功能"><a href="#示例：添加”记住我”功能" class="headerlink" title="示例：添加”记住我”功能"></a>示例：添加”记住我”功能</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">You: /opsx:propose Add remember me checkbox with 30-day sessions</span><br><span class="line"></span><br><span class="line">AI:  Searching existing specs for authentication requirements...</span><br><span class="line">     Read(openspec/specs/auth-session/spec.md)</span><br><span class="line">     Searching existing codebase for session handling...</span><br><span class="line">     Read(src/auth/session.ts)</span><br><span class="line">     Creating proposal and breaking down implementation tasks...</span><br><span class="line">     </span><br><span class="line">     Created change proposal with ID add-remember-me</span><br><span class="line">     </span><br><span class="line">     openspec/changes/add-remember-me/</span><br><span class="line">     ├── proposal.md ← describe the change</span><br><span class="line">     ├── design.md ← technical decisions</span><br><span class="line">     ├── tasks.md ← implementation tasks</span><br><span class="line">     └── specs/ ← spec deltas</span><br><span class="line">         └── auth-session/</span><br><span class="line">             └── spec.md</span><br><span class="line">     </span><br><span class="line">     This change affects 1 spec, with 3 phases and 8 tasks</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="CLI-命令参考"><a href="#CLI-命令参考" class="headerlink" title="CLI 命令参考"></a>CLI 命令参考</h2><h3 id="命令分类"><a href="#命令分类" class="headerlink" title="命令分类"></a>命令分类</h3><table>
+<thead>
+<tr>
+<th>类别</th>
+<th>命令</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>设置</strong></td>
+<td><code>init</code>, <code>update</code></td>
+<td>初始化和更新项目中的 OpenSpec</td>
+</tr>
+<tr>
+<td><strong>浏览</strong></td>
+<td><code>list</code>, <code>view</code>, <code>show</code></td>
+<td>探索变更和规格</td>
+</tr>
+<tr>
+<td><strong>验证</strong></td>
+<td><code>validate</code></td>
+<td>检查变更和规格的问题</td>
+</tr>
+<tr>
+<td><strong>生命周期</strong></td>
+<td><code>archive</code></td>
+<td>完成已完成的变更</td>
+</tr>
+<tr>
+<td><strong>工作流</strong></td>
+<td><code>status</code>, <code>instructions</code>, <code>templates</code>, <code>schemas</code></td>
+<td>产物驱动工作流支持</td>
+</tr>
+<tr>
+<td><strong>模式</strong></td>
+<td><code>schema init</code>, <code>schema fork</code>, <code>schema validate</code>, <code>schema which</code></td>
+<td>创建和管理自定义工作流</td>
+</tr>
+<tr>
+<td><strong>配置</strong></td>
+<td><code>config</code></td>
+<td>查看和修改设置</td>
+</tr>
+<tr>
+<td><strong>实用</strong></td>
+<td><code>feedback</code>, <code>completion</code></td>
+<td>反馈和 shell 集成</td>
+</tr>
+</tbody></table>
+<h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 初始化项目</span></span><br><span class="line">openspec init</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更新代理指令</span></span><br><span class="line">openspec update</span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出变更和规格</span></span><br><span class="line">openspec list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看特定项目</span></span><br><span class="line">openspec show &lt;item&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证</span></span><br><span class="line">openspec validate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看状态</span></span><br><span class="line">openspec status</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取下一步指令</span></span><br><span class="line">openspec instructions</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置</span></span><br><span class="line">openspec config profile</span><br></pre></td></tr></table></figure>
+
+<h3 id="JSON-输出（用于代理-脚本）"><a href="#JSON-输出（用于代理-脚本）" class="headerlink" title="JSON 输出（用于代理&#x2F;脚本）"></a>JSON 输出（用于代理&#x2F;脚本）</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>人类使用</th>
+<th>代理使用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>openspec list</code></td>
+<td>浏览变更&#x2F;规格</td>
+<td><code>--json</code> 获取结构化数据</td>
+</tr>
+<tr>
+<td><code>openspec show &lt;item&gt;</code></td>
+<td>读取内容</td>
+<td><code>--json</code> 用于解析</td>
+</tr>
+<tr>
+<td><code>openspec validate</code></td>
+<td>检查问题</td>
+<td><code>--all --json</code> 批量验证</td>
+</tr>
+<tr>
+<td><code>openspec status</code></td>
+<td>查看产物进度</td>
+<td><code>--json</code> 获取结构化状态</td>
+</tr>
+<tr>
+<td><code>openspec instructions</code></td>
+<td>获取下一步</td>
+<td><code>--json</code> 获取代理指令</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="支持的-AI-工具"><a href="#支持的-AI-工具" class="headerlink" title="支持的 AI 工具"></a>支持的 AI 工具</h2><p>OpenSpec 支持 <strong>25+ AI 编码助手</strong>：</p>
+<h3 id="原生支持"><a href="#原生支持" class="headerlink" title="原生支持"></a>原生支持</h3><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Claude Code</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>Cursor</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>Codex</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>GitHub Copilot</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>OpenCode</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>Windsurf</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>Gemini CLI</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>Antigravity</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>Cline</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>RooCode</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>Kilo Code</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>Amazon Q</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>Qoder</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>Auggie CLI</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>Qwen Code</td>
+<td>✅ 原生支持</td>
+</tr>
+<tr>
+<td>CodeBuddy</td>
+<td>✅ 原生支持</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="与竞品对比"><a href="#与竞品对比" class="headerlink" title="与竞品对比"></a>与竞品对比</h2><h3 id="vs-Spec-Kit-GitHub"><a href="#vs-Spec-Kit-GitHub" class="headerlink" title="vs. Spec Kit (GitHub)"></a>vs. Spec Kit (GitHub)</h3><table>
+<thead>
+<tr>
+<th>方面</th>
+<th>Spec Kit</th>
+<th>OpenSpec</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>风格</strong></td>
+<td>彻底但重量级</td>
+<td>轻量级</td>
+</tr>
+<tr>
+<td><strong>阶段</strong></td>
+<td>刚性阶段门槛</td>
+<td>流畅，无阶段门槛</td>
+</tr>
+<tr>
+<td><strong>设置</strong></td>
+<td>Python 设置</td>
+<td>Node.js，秒级初始化</td>
+</tr>
+<tr>
+<td><strong>迭代</strong></td>
+<td>较难回退</td>
+<td>自由迭代</td>
+</tr>
+</tbody></table>
+<p><strong>结论</strong>：OpenSpec 更轻量，让你自由迭代。</p>
+<h3 id="vs-Kiro-AWS"><a href="#vs-Kiro-AWS" class="headerlink" title="vs. Kiro (AWS)"></a>vs. Kiro (AWS)</h3><table>
+<thead>
+<tr>
+<th>方面</th>
+<th>Kiro</th>
+<th>OpenSpec</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>IDE</strong></td>
+<td>锁定他们的 IDE</td>
+<td>使用你已有的工具</td>
+</tr>
+<tr>
+<td><strong>模型</strong></td>
+<td>仅限 Claude 模型</td>
+<td>支持多种模型</td>
+</tr>
+<tr>
+<td><strong>灵活性</strong></td>
+<td>受限</td>
+<td>高度灵活</td>
+</tr>
+</tbody></table>
+<p><strong>结论</strong>：OpenSpec 与你已有的工具配合使用。</p>
+<h3 id="vs-无规格开发"><a href="#vs-无规格开发" class="headerlink" title="vs. 无规格开发"></a>vs. 无规格开发</h3><table>
+<thead>
+<tr>
+<th>方面</th>
+<th>无规格</th>
+<th>OpenSpec</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>提示</strong></td>
+<td>模糊提示</td>
+<td>结构化规格</td>
+</tr>
+<tr>
+<td><strong>结果</strong></td>
+<td>不可预测</td>
+<td>可预测</td>
+</tr>
+<tr>
+<td><strong>上下文</strong></td>
+<td>聊天历史中丢失</td>
+<td>持久化在代码库中</td>
+</tr>
+</tbody></table>
+<p><strong>结论</strong>：OpenSpec 带来可预测性，无需繁文缛节。</p>
+<hr>
+<h2 id="高级功能"><a href="#高级功能" class="headerlink" title="高级功能"></a>高级功能</h2><h3 id="Schemas（模式）"><a href="#Schemas（模式）" class="headerlink" title="Schemas（模式）"></a>Schemas（模式）</h3><p>模式定义工作流的产物类型及其依赖关系。</p>
+<h4 id="内置模式"><a href="#内置模式" class="headerlink" title="内置模式"></a>内置模式</h4><p><strong>spec-driven</strong>（默认）</p>
+<p>标准规格驱动开发工作流：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proposal → specs → design → tasks → implement</span><br></pre></td></tr></table></figure>
+
+<p>最适合：大多数功能工作，你想在实现之前对齐规格。</p>
+<h4 id="自定义模式"><a href="#自定义模式" class="headerlink" title="自定义模式"></a>自定义模式</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从头创建</span></span><br><span class="line">openspec schema init research-first</span><br><span class="line"></span><br><span class="line"><span class="comment"># 或分叉现有模式</span></span><br><span class="line">openspec schema fork spec-driven research-first</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例自定义模式</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># openspec/schemas/research-first/schema.yaml</span></span><br><span class="line"><span class="attr">name:</span> <span class="string">research-first</span></span><br><span class="line"><span class="attr">artifacts:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">research</span></span><br><span class="line">    <span class="attr">generates:</span> <span class="string">research.md</span></span><br><span class="line">    <span class="attr">requires:</span> []           <span class="comment"># 先做研究</span></span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">proposal</span></span><br><span class="line">    <span class="attr">generates:</span> <span class="string">proposal.md</span></span><br><span class="line">    <span class="attr">requires:</span> [<span class="string">research</span>]   <span class="comment"># 提案由研究支撑</span></span><br><span class="line"></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">tasks</span></span><br><span class="line">    <span class="attr">generates:</span> <span class="string">tasks.md</span></span><br><span class="line">    <span class="attr">requires:</span> [<span class="string">proposal</span>]   <span class="comment"># 跳过规格/设计，直接到任务</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Archive（归档）"><a href="#Archive（归档）" class="headerlink" title="Archive（归档）"></a>Archive（归档）</h3><p>归档通过将增量规格合并到主规格并保留变更历史来完成变更。</p>
+<h4 id="归档过程"><a href="#归档过程" class="headerlink" title="归档过程"></a>归档过程</h4><ol>
+<li><strong>合并增量</strong> — 每个增量规格部分（ADDED&#x2F;MODIFIED&#x2F;REMOVED）应用到相应的主规格</li>
+<li><strong>移动到归档</strong> — 变更文件夹移动到 <code>changes/archive/</code>，带日期前缀</li>
+<li><strong>保留上下文</strong> — 所有产物在归档中保持完整</li>
+</ol>
+<h4 id="归档前后"><a href="#归档前后" class="headerlink" title="归档前后"></a>归档前后</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Before archive:</span><br><span class="line"></span><br><span class="line">openspec/</span><br><span class="line">├── specs/</span><br><span class="line">│   └── auth/</span><br><span class="line">│       └── spec.md ◄────────────────┐</span><br><span class="line">└── changes/                         │</span><br><span class="line">    └── add-2fa/                     │</span><br><span class="line">        ├── proposal.md              │</span><br><span class="line">        ├── design.md                │ merge</span><br><span class="line">        ├── tasks.md                 │</span><br><span class="line">        └── specs/                   │</span><br><span class="line">            └── auth/                │</span><br><span class="line">                └── spec.md ─────────┘</span><br><span class="line"></span><br><span class="line">After archive:</span><br><span class="line"></span><br><span class="line">openspec/</span><br><span class="line">├── specs/</span><br><span class="line">│   └── auth/</span><br><span class="line">│       └── spec.md        # 现在包含 2FA 需求</span><br><span class="line">└── changes/</span><br><span class="line">    └── archive/</span><br><span class="line">        └── 2025-01-24-add-2fa/    # 保留历史</span><br><span class="line">            ├── proposal.md</span><br><span class="line">            ├── design.md</span><br><span class="line">            ├── tasks.md</span><br><span class="line">            └── specs/</span><br><span class="line">                └── auth/</span><br><span class="line">                    └── spec.md</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="使用建议"><a href="#使用建议" class="headerlink" title="使用建议"></a>使用建议</h2><h3 id="模型选择"><a href="#模型选择" class="headerlink" title="模型选择"></a>模型选择</h3><p>OpenSpec 最适合高推理模型。推荐：</p>
+<ul>
+<li><strong>Opus 4.5</strong> — 规划和实现</li>
+<li><strong>GPT 5.2</strong> — 规划和实现</li>
+</ul>
+<h3 id="上下文卫生"><a href="#上下文卫生" class="headerlink" title="上下文卫生"></a>上下文卫生</h3><p>OpenSpec 受益于干净的上下文窗口：</p>
+<ul>
+<li>在开始实现之前清除上下文</li>
+<li>在整个会话中保持良好的上下文卫生</li>
+</ul>
+<h3 id="渐进式严谨"><a href="#渐进式严谨" class="headerlink" title="渐进式严谨"></a>渐进式严谨</h3><p>OpenSpec 旨在避免官僚主义。使用最轻的级别：</p>
+<p><strong>Lite 规格（默认）</strong>：</p>
+<ul>
+<li>简短的行为优先需求</li>
+<li>清晰的范围和非目标</li>
+<li>几个具体的验收检查</li>
+</ul>
+<p><strong>Full 规格（高风险）</strong>：</p>
+<ul>
+<li>跨团队或跨仓库变更</li>
+<li>API&#x2F;契约变更、迁移、安全&#x2F;隐私问题</li>
+<li>歧义可能导致昂贵返工的变更</li>
+</ul>
+<p>大多数变更应保持 Lite 模式。</p>
+<hr>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><h3 id="Q-OpenSpec-与代理内置的计划模式有什么不同？"><a href="#Q-OpenSpec-与代理内置的计划模式有什么不同？" class="headerlink" title="Q: OpenSpec 与代理内置的计划模式有什么不同？"></a>Q: OpenSpec 与代理内置的计划模式有什么不同？</h3><p>计划模式对单个聊天会话很好。我们关注跨越多个会话的计划，或你想与他人分享的计划。功能规划的工作空间让你更好地规划并随着进展进行优化。</p>
+<h3 id="Q-OpenSpec-与其他规划工具的区别？"><a href="#Q-OpenSpec-与其他规划工具的区别？" class="headerlink" title="Q: OpenSpec 与其他规划工具的区别？"></a>Q: OpenSpec 与其他规划工具的区别？</h3><ol>
+<li><strong>轻量级</strong> — 最少步骤，最少流程</li>
+<li><strong>棕地优先</strong> — 关注成熟代码库</li>
+<li><strong>规格存在于代码中</strong> — 其他工具只在规划期间使用需求，然后丢弃</li>
+</ol>
+<h3 id="Q-为什么用规格而不是写详细提示？"><a href="#Q-为什么用规格而不是写详细提示？" class="headerlink" title="Q: 为什么用规格而不是写详细提示？"></a>Q: 为什么用规格而不是写详细提示？</h3><p>规格作为对齐。一种在编写任何代码之前在单一空间中构建思维的方式。更清楚地了解你正在构建什么，代理在执行计划时有更好的上下文。</p>
+<h3 id="Q-可以在现有代码库上使用-OpenSpec-吗？"><a href="#Q-可以在现有代码库上使用-OpenSpec-吗？" class="headerlink" title="Q: 可以在现有代码库上使用 OpenSpec 吗？"></a>Q: 可以在现有代码库上使用 OpenSpec 吗？</h3><p>可以！规格在构建时创建。我们的观点是，试图预先生成所有规格是浪费时间。根据需要创建规格，逐步构建。</p>
+<h3 id="Q-切换编码代理时会发生什么？"><a href="#Q-切换编码代理时会发生什么？" class="headerlink" title="Q: 切换编码代理时会发生什么？"></a>Q: 切换编码代理时会发生什么？</h3><p>我们的目标是成为你可以带到任何地方的通用规划层。编码代理正在快速改进。这个月流行的下个月可能就不流行了。你的规格不应该关心。</p>
+<h3 id="Q-规格存在哪里？"><a href="#Q-规格存在哪里？" class="headerlink" title="Q: 规格存在哪里？"></a>Q: 规格存在哪里？</h3><p>在你的代码库中。我们的观点是它们应该被签入 — 它们提供系统如何工作以及构建意图的可见性。</p>
+<h3 id="Q-这不就是瀑布吗？"><a href="#Q-这不就是瀑布吗？" class="headerlink" title="Q: 这不就是瀑布吗？"></a>Q: 这不就是瀑布吗？</h3><p>瀑布失败是因为僵化的计划和数月的前期规划。这都不是。我们希望你得到足够好的计划并开始编码 — 最少的努力，轻量级的流程。</p>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>OpenSpec 是一个轻量级的规格驱动开发框架，核心价值：</p>
+<table>
+<thead>
+<tr>
+<th>价值</th>
+<th>实现方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>轻量级</strong></td>
+<td>秒级初始化，最少流程</td>
+</tr>
+<tr>
+<td><strong>流畅</strong></td>
+<td>无阶段门槛，随时更新产物</td>
+</tr>
+<tr>
+<td><strong>迭代</strong></td>
+<td>随着学习更新规格</td>
+</tr>
+<tr>
+<td><strong>棕地优先</strong></td>
+<td>增量规格，适合现有代码库</td>
+</tr>
+<tr>
+<td><strong>工具无关</strong></td>
+<td>支持 25+ AI 编码助手</td>
+</tr>
+</tbody></table>
+<p>核心理念：</p>
+<blockquote>
+<p><strong>规格是可执行的第一类产物，而非丢弃的脚手架。</strong></p>
+<p>先同意再构建，而非先构建再返工。</p>
+</blockquote>
+<p>如果你正在使用 AI 编码助手，OpenSpec 是提升开发效率和代码质量的必备工具。</p>
+<hr>
+<h2 id="相关链接"><a href="#相关链接" class="headerlink" title="相关链接"></a>相关链接</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/Fission-AI/OpenSpec">GitHub 仓库</a> - 42K+ Stars</li>
+<li><a target="_blank" rel="noopener" href="https://openspec.dev/">官方网站</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Fission-AI/OpenSpec/tree/main/docs">官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Fission-AI/OpenSpec/blob/main/docs/getting-started.md">Getting Started</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Fission-AI/OpenSpec/blob/main/docs/workflows.md">Workflows</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Fission-AI/OpenSpec/blob/main/docs/commands.md">Commands</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Fission-AI/OpenSpec/blob/main/docs/concepts.md">Concepts</a></li>
+<li><a target="_blank" rel="noopener" href="https://discord.gg/openspec">Discord 社区</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lonelyrookie.github.io">Abel Huang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lonelyrookie.github.io/posts/4093902447/">https://lonelyrookie.github.io/posts/4093902447/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lonelyrookie.github.io" target="_blank">我的博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/AI%E5%B7%A5%E5%85%B7/">AI工具</a><a class="post-meta__tags" href="/tags/Claude-Code/">Claude Code</a><a class="post-meta__tags" href="/tags/Spec-Driven-Development/">Spec-Driven Development</a></div><div class="post-share"><div class="social-share" data-image="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/3400954176/" title="Spec Kit入门指南：GitHub开源的规格驱动开发工具包"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Spec Kit入门指南：GitHub开源的规格驱动开发工具包</div></div><div class="info-2"><div class="info-item-1">简介Spec Kit 是 GitHub 开源的规格驱动开发（Spec-Driven Development）工具包，帮助开发者更快地构建高质量软件。  项目数据：28K+ GitHub Stars | 11+ AI Agents | 2.3K+ Forks | MIT 开源  什么是 Spec-Driven Development？Spec-Driven Development（规格驱动开发）颠覆了传统软件开发方式。 几十年来，代码一直是王 — 规格只是我们构建后就丢弃的脚手架，一旦”真正工作”的编码开始。Spec-Driven Development 改变了这一点：规格变成可执行的，直接生成可工作的实现，而不仅仅是指导它们。    传统开发 Spec-Driven Development    规格是脚手架，编码后丢弃 规格是可执行的第一类产物   从想法直接跳到代码 规格 → 计划 → 任务 → 实现   AI 输出不一致，因为提示模糊 AI 输出一致，因为上下文结构化   一次性代码生成 多步骤精细化流程   为什么需要 Spec Kit？当你使用 AI 编码助手时，常见问...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/3400954176/" title="Spec Kit入门指南：GitHub开源的规格驱动开发工具包"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-04-27</div><div class="info-item-2">Spec Kit入门指南：GitHub开源的规格驱动开发工具包</div></div><div class="info-2"><div class="info-item-1">简介Spec Kit 是 GitHub 开源的规格驱动开发（Spec-Driven Development）工具包，帮助开发者更快地构建高质量软件。  项目数据：28K+ GitHub Stars | 11+ AI Agents | 2.3K+ Forks | MIT 开源  什么是 Spec-Driven Development？Spec-Driven Development（规格驱动开发）颠覆了传统软件开发方式。 几十年来，代码一直是王 — 规格只是我们构建后就丢弃的脚手架，一旦”真正工作”的编码开始。Spec-Driven Development 改变了这一点：规格变成可执行的，直接生成可工作的实现，而不仅仅是指导它们。    传统开发 Spec-Driven Development    规格是脚手架，编码后丢弃 规格是可执行的第一类产物   从想法直接跳到代码 规格 → 计划 → 任务 → 实现   AI 输出不一致，因为提示模糊 AI 输出一致，因为上下文结构化   一次性代码生成 多步骤精细化流程   为什么需要 Spec Kit？当你使用 AI 编码助手时，常见问...</div></div></div></a><a class="pagination-related" href="/posts/1947712232/" title="superpowers入门指南"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-04-26</div><div class="info-item-2">superpowers入门指南</div></div><div class="info-2"><div class="info-item-1">简介Superpowers 是一个完整的软件开发方法论，专为编码代理（coding agents）设计。它建立在可组合技能（skills）和初始指令之上，确保你的 AI 编码助手能够更智能、更系统地完成开发任务。 为什么需要 Superpowers？当你启动编码代理时，它通常不会停下来思考你真正想要做什么，而是直接跳入编写代码。Superpowers 改变了这一点：  先思考后编码 - 代理会先理解你的需求，提炼出规格说明 分块展示设计 - 将设计分成易于消化的小块供你审阅 制定清晰计划 - 为”热情但缺乏判断力的初级工程师”级别的执行者提供可遵循的实施计划 自主执行 - 代理可以自主工作数小时而不偏离计划  核心理念   原则 说明    测试驱动开发 (TDD) 始终先写测试，永远不跳过   系统化优于临时方案 流程优于猜测，过程优于假设   降低复杂度 简洁是首要目标，小文件优于大文件   证据优于声明 验证后再宣布成功，看到测试失败再写代码   技能优先级Superpowers 技能覆盖默认系统行为，但用户指令始终优先：  用户的显式指令 (CLAUDE.md, GEMI...</div></div></div></a><a class="pagination-related" href="/posts/1127074421/" title="graphify入门指南"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-04-19</div><div class="info-item-2">graphify入门指南</div></div><div class="info-2"><div class="info-item-1">graphify 入门指南一句话理解graphify 把你的代码、文档、论文、图片变成一张知识图谱，让 AI 助手”理解”你的项目，而不是每次都重新读文件。  核心价值：为什么需要它？问题场景当你问 AI 助手”这个项目的认证流程是怎样的？”：  传统方式：AI 用 Grep 搜索关键词，读几十个文件，消耗大量 token graphify 方式：AI 先读 GRAPH_REPORT.md（一页总结），按图谱导航，token 消耗降低 71.5 倍  适合谁？   你的情况 是否适合    项目文件超过 20 个 ✅ 非常适合   需要理解别人的代码库 ✅ 非常适合   有论文&#x2F;文档需要和代码关联理解 ✅ 非常适合   只有 3-5 个小文件 ❌ 收益不大   只做简单单文件编辑 ❌ 用不上    快速开始（5 分钟）第一步：安装12345# 安装 Python 包（注意包名是 graphifyy，双 y）pip install graphifyy# 安装到你的 AI 助手（以 Claude Code 为例）graphify install  第二步：构建图谱在你的 A...</div></div></div></a><a class="pagination-related" href="/posts/1085508936/" title="andrej-karpathy-skills入门指南"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-04-19</div><div class="info-item-2">andrej-karpathy-skills入门指南</div></div><div class="info-2"><div class="info-item-1">简介andrej-karpathy-skills 是一个旨在改善 Claude Code 行为的项目，其核心理念源自 AI 领域知名专家 Andrej Karpathy 对 LLM 编程陷阱的深刻观察。 解决的问题Andrej Karpathy 在其推文中指出了 LLM 编程时的常见问题：  “模型会替你做出错误的假设，然后不加验证地继续执行。它们不管理困惑，不寻求澄清，不暴露不一致性，不呈现权衡取舍，不在应该的时候提出反对。” “它们喜欢过度复杂化代码和 API，膨胀抽象层，不清理死代码……用 1000 行代码实现本可以用 100 行完成的功能。” “它们有时仍会作为副作用更改&#x2F;删除它们不够理解的注释和代码，即使这些与任务正交。”  核心价值通过一个简单的 CLAUDE.md 文件，该项目提供四大原则来直接解决上述问题，帮助 AI 助手生成更简洁、更准确的代码。 核心原则项目包含四个核心原则，每个原则针对特定的 LLM 编程问题：    原则 解决的问题    先思考后编码 错误假设、隐藏困惑、缺失权衡   简单优先 过度复杂化、膨胀的抽象层   精准修改 正交编辑、...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://avatars.githubusercontent.com/u/40121337?v=4" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Abel Huang</div><div class="author-info-description">热爱技术，热爱生活</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">33</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">13</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LonelyRookie"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/LonelyRookie" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:1782480783@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-OpenSpec%EF%BC%9F"><span class="toc-number">1.1.</span> <span class="toc-text">为什么需要 OpenSpec？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E7%90%86%E5%BF%B5"><span class="toc-number">1.2.</span> <span class="toc-text">核心理念</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E4%BA%9B%E7%90%86%E5%BF%B5%E5%BE%88%E9%87%8D%E8%A6%81"><span class="toc-number">1.2.1.</span> <span class="toc-text">为什么这些理念很重要</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8-5%E5%88%86%E9%92%9F"><span class="toc-number">2.</span> <span class="toc-text">快速入门 (5分钟)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E8%A6%81%E6%B1%82"><span class="toc-number">2.1.</span> <span class="toc-text">系统要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-number">2.2.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%B9%E7%9B%AE"><span class="toc-number">2.3.</span> <span class="toc-text">初始化项目</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E4%BD%BF%E7%94%A8"><span class="toc-number">2.4.</span> <span class="toc-text">开始使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E7%94%A8%E6%89%A9%E5%B1%95%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">2.5.</span> <span class="toc-text">启用扩展工作流</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="toc-number">3.</span> <span class="toc-text">核心概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%A7%E5%B1%80%E8%A7%82"><span class="toc-number">3.1.</span> <span class="toc-text">大局观</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Specs%EF%BC%88%E8%A7%84%E6%A0%BC%EF%BC%89"><span class="toc-number">3.2.</span> <span class="toc-text">Specs（规格）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%93%E6%9E%84"><span class="toc-number">3.2.1.</span> <span class="toc-text">结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%84%E6%A0%BC%E6%A0%BC%E5%BC%8F"><span class="toc-number">3.2.2.</span> <span class="toc-text">规格格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%85%83%E7%B4%A0"><span class="toc-number">3.2.3.</span> <span class="toc-text">关键元素</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#RFC-2119-%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">3.2.4.</span> <span class="toc-text">RFC 2119 关键字</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Changes%EF%BC%88%E5%8F%98%E6%9B%B4%EF%BC%89"><span class="toc-number">3.3.</span> <span class="toc-text">Changes（变更）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%98%E6%9B%B4%E7%BB%93%E6%9E%84"><span class="toc-number">3.3.1.</span> <span class="toc-text">变更结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%98%E6%9B%B4%E6%98%AF%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="toc-number">3.3.2.</span> <span class="toc-text">为什么变更是文件夹</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Artifacts%EF%BC%88%E4%BA%A7%E7%89%A9%EF%BC%89"><span class="toc-number">3.4.</span> <span class="toc-text">Artifacts（产物）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%A7%E7%89%A9%E6%B5%81%E7%A8%8B"><span class="toc-number">3.4.1.</span> <span class="toc-text">产物流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Proposal%EF%BC%88%E6%8F%90%E6%A1%88%EF%BC%89"><span class="toc-number">3.4.2.</span> <span class="toc-text">Proposal（提案）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Design%EF%BC%88%E8%AE%BE%E8%AE%A1%EF%BC%89"><span class="toc-number">3.4.3.</span> <span class="toc-text">Design（设计）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Tasks%EF%BC%88%E4%BB%BB%E5%8A%A1%EF%BC%89"><span class="toc-number">3.4.4.</span> <span class="toc-text">Tasks（任务）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Delta-Specs%EF%BC%88%E5%A2%9E%E9%87%8F%E8%A7%84%E6%A0%BC%EF%BC%89"><span class="toc-number">3.5.</span> <span class="toc-text">Delta Specs（增量规格）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%BC%E5%BC%8F"><span class="toc-number">3.5.1.</span> <span class="toc-text">格式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A2%9E%E9%87%8F%E9%83%A8%E5%88%86"><span class="toc-number">3.5.2.</span> <span class="toc-text">增量部分</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8%E5%A2%9E%E9%87%8F%E8%80%8C%E9%9D%9E%E5%AE%8C%E6%95%B4%E8%A7%84%E6%A0%BC"><span class="toc-number">3.5.3.</span> <span class="toc-text">为什么用增量而非完整规格</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OPSX-%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">4.</span> <span class="toc-text">OPSX 工作流</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Core-%E5%B7%A5%E4%BD%9C%E6%B5%81%EF%BC%88%E9%BB%98%E8%AE%A4%EF%BC%89"><span class="toc-number">4.1.</span> <span class="toc-text">Core 工作流（默认）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Expanded-%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">4.2.</span> <span class="toc-text">Expanded 工作流</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%AF%B9%E6%AF%94"><span class="toc-number">4.3.</span> <span class="toc-text">工作流对比</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E6%88%98%E7%A4%BA%E4%BE%8B"><span class="toc-number">5.</span> <span class="toc-text">实战示例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A%E6%B7%BB%E5%8A%A0%E6%9A%97%E8%89%B2%E6%A8%A1%E5%BC%8F"><span class="toc-number">5.1.</span> <span class="toc-text">示例：添加暗色模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A%E6%B7%BB%E5%8A%A0%E2%80%9D%E8%AE%B0%E4%BD%8F%E6%88%91%E2%80%9D%E5%8A%9F%E8%83%BD"><span class="toc-number">5.2.</span> <span class="toc-text">示例：添加”记住我”功能</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CLI-%E5%91%BD%E4%BB%A4%E5%8F%82%E8%80%83"><span class="toc-number">6.</span> <span class="toc-text">CLI 命令参考</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E5%88%86%E7%B1%BB"><span class="toc-number">6.1.</span> <span class="toc-text">命令分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-number">6.2.</span> <span class="toc-text">常用命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JSON-%E8%BE%93%E5%87%BA%EF%BC%88%E7%94%A8%E4%BA%8E%E4%BB%A3%E7%90%86-%E8%84%9A%E6%9C%AC%EF%BC%89"><span class="toc-number">6.3.</span> <span class="toc-text">JSON 输出（用于代理&#x2F;脚本）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%AF%E6%8C%81%E7%9A%84-AI-%E5%B7%A5%E5%85%B7"><span class="toc-number">7.</span> <span class="toc-text">支持的 AI 工具</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E7%94%9F%E6%94%AF%E6%8C%81"><span class="toc-number">7.1.</span> <span class="toc-text">原生支持</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8E%E7%AB%9E%E5%93%81%E5%AF%B9%E6%AF%94"><span class="toc-number">8.</span> <span class="toc-text">与竞品对比</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#vs-Spec-Kit-GitHub"><span class="toc-number">8.1.</span> <span class="toc-text">vs. Spec Kit (GitHub)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vs-Kiro-AWS"><span class="toc-number">8.2.</span> <span class="toc-text">vs. Kiro (AWS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vs-%E6%97%A0%E8%A7%84%E6%A0%BC%E5%BC%80%E5%8F%91"><span class="toc-number">8.3.</span> <span class="toc-text">vs. 无规格开发</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E7%BA%A7%E5%8A%9F%E8%83%BD"><span class="toc-number">9.</span> <span class="toc-text">高级功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Schemas%EF%BC%88%E6%A8%A1%E5%BC%8F%EF%BC%89"><span class="toc-number">9.1.</span> <span class="toc-text">Schemas（模式）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E7%BD%AE%E6%A8%A1%E5%BC%8F"><span class="toc-number">9.1.1.</span> <span class="toc-text">内置模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%A8%A1%E5%BC%8F"><span class="toc-number">9.1.2.</span> <span class="toc-text">自定义模式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Archive%EF%BC%88%E5%BD%92%E6%A1%A3%EF%BC%89"><span class="toc-number">9.2.</span> <span class="toc-text">Archive（归档）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BD%92%E6%A1%A3%E8%BF%87%E7%A8%8B"><span class="toc-number">9.2.1.</span> <span class="toc-text">归档过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BD%92%E6%A1%A3%E5%89%8D%E5%90%8E"><span class="toc-number">9.2.2.</span> <span class="toc-text">归档前后</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%BB%BA%E8%AE%AE"><span class="toc-number">10.</span> <span class="toc-text">使用建议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E9%80%89%E6%8B%A9"><span class="toc-number">10.1.</span> <span class="toc-text">模型选择</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E5%8D%AB%E7%94%9F"><span class="toc-number">10.2.</span> <span class="toc-text">上下文卫生</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%90%E8%BF%9B%E5%BC%8F%E4%B8%A5%E8%B0%A8"><span class="toc-number">10.3.</span> <span class="toc-text">渐进式严谨</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-number">11.</span> <span class="toc-text">常见问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Q-OpenSpec-%E4%B8%8E%E4%BB%A3%E7%90%86%E5%86%85%E7%BD%AE%E7%9A%84%E8%AE%A1%E5%88%92%E6%A8%A1%E5%BC%8F%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C%EF%BC%9F"><span class="toc-number">11.1.</span> <span class="toc-text">Q: OpenSpec 与代理内置的计划模式有什么不同？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Q-OpenSpec-%E4%B8%8E%E5%85%B6%E4%BB%96%E8%A7%84%E5%88%92%E5%B7%A5%E5%85%B7%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-number">11.2.</span> <span class="toc-text">Q: OpenSpec 与其他规划工具的区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Q-%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8%E8%A7%84%E6%A0%BC%E8%80%8C%E4%B8%8D%E6%98%AF%E5%86%99%E8%AF%A6%E7%BB%86%E6%8F%90%E7%A4%BA%EF%BC%9F"><span class="toc-number">11.3.</span> <span class="toc-text">Q: 为什么用规格而不是写详细提示？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Q-%E5%8F%AF%E4%BB%A5%E5%9C%A8%E7%8E%B0%E6%9C%89%E4%BB%A3%E7%A0%81%E5%BA%93%E4%B8%8A%E4%BD%BF%E7%94%A8-OpenSpec-%E5%90%97%EF%BC%9F"><span class="toc-number">11.4.</span> <span class="toc-text">Q: 可以在现有代码库上使用 OpenSpec 吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Q-%E5%88%87%E6%8D%A2%E7%BC%96%E7%A0%81%E4%BB%A3%E7%90%86%E6%97%B6%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">11.5.</span> <span class="toc-text">Q: 切换编码代理时会发生什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Q-%E8%A7%84%E6%A0%BC%E5%AD%98%E5%9C%A8%E5%93%AA%E9%87%8C%EF%BC%9F"><span class="toc-number">11.6.</span> <span class="toc-text">Q: 规格存在哪里？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Q-%E8%BF%99%E4%B8%8D%E5%B0%B1%E6%98%AF%E7%80%91%E5%B8%83%E5%90%97%EF%BC%9F"><span class="toc-number">11.7.</span> <span class="toc-text">Q: 这不就是瀑布吗？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">12.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E9%93%BE%E6%8E%A5"><span class="toc-number">13.</span> <span class="toc-text">相关链接</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/4093902447/" title="OpenSpec入门指南：轻量级规格驱动开发框架"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OpenSpec入门指南：轻量级规格驱动开发框架"/></a><div class="content"><a class="title" href="/posts/4093902447/" title="OpenSpec入门指南：轻量级规格驱动开发框架">OpenSpec入门指南：轻量级规格驱动开发框架</a><time datetime="2026-04-26T16:30:00.000Z" title="发表于 2026-04-27 00:30:00">2026-04-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3400954176/" title="Spec Kit入门指南：GitHub开源的规格驱动开发工具包"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Spec Kit入门指南：GitHub开源的规格驱动开发工具包"/></a><div class="content"><a class="title" href="/posts/3400954176/" title="Spec Kit入门指南：GitHub开源的规格驱动开发工具包">Spec Kit入门指南：GitHub开源的规格驱动开发工具包</a><time datetime="2026-04-26T16:00:00.000Z" title="发表于 2026-04-27 00:00:00">2026-04-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/1947712232/" title="superpowers入门指南"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="superpowers入门指南"/></a><div class="content"><a class="title" href="/posts/1947712232/" title="superpowers入门指南">superpowers入门指南</a><time datetime="2026-04-26T14:34:20.000Z" title="发表于 2026-04-26 22:34:20">2026-04-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/2101102054/" title="markitdown入门指南"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="markitdown入门指南"/></a><div class="content"><a class="title" href="/posts/2101102054/" title="markitdown入门指南">markitdown入门指南</a><time datetime="2026-04-19T14:21:02.000Z" title="发表于 2026-04-19 22:21:02">2026-04-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/1085508936/" title="andrej-karpathy-skills入门指南"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="andrej-karpathy-skills入门指南"/></a><div class="content"><a class="title" href="/posts/1085508936/" title="andrej-karpathy-skills入门指南">andrej-karpathy-skills入门指南</a><time datetime="2026-04-19T14:09:35.000Z" title="发表于 2026-04-19 22:09:35">2026-04-19</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Abel Huang</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://github.com/LonelyRookie" target="_blank">Follow me on GitHub</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? '' : ''
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>
