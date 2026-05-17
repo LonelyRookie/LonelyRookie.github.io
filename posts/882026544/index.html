@@ -1,0 +1,969 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Microsoft Qlib：量化投资AI框架实战教程 | 我的博客</title><meta name="author" content="Abel Huang"><meta name="copyright" content="Abel Huang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本文详细介绍Microsoft开源的Qlib量化投资AI框架，从架构设计、数据处理、模型训练、回测系统到与其他框架对比，为纯技术开发者提供完整的实战教程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Microsoft Qlib：量化投资AI框架实战教程">
+<meta property="og:url" content="https://lonelyrookie.github.io/posts/882026544/index.html">
+<meta property="og:site_name" content="我的博客">
+<meta property="og:description" content="本文详细介绍Microsoft开源的Qlib量化投资AI框架，从架构设计、数据处理、模型训练、回测系统到与其他框架对比，为纯技术开发者提供完整的实战教程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800">
+<meta property="article:published_time" content="2026-05-04T16:23:55.000Z">
+<meta property="article:modified_time" content="2026-05-17T15:46:18.378Z">
+<meta property="article:author" content="Abel Huang">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Qlib">
+<meta property="article:tag" content="量化金融">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Microsoft Qlib：量化投资AI框架实战教程",
+  "url": "https://lonelyrookie.github.io/posts/882026544/",
+  "image": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800",
+  "datePublished": "2026-05-04T16:23:55.000Z",
+  "dateModified": "2026-05-17T15:46:18.378Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Abel Huang",
+      "url": "https://lonelyrookie.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/40121337?v=4"><link rel="canonical" href="https://lonelyrookie.github.io/posts/882026544/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Microsoft Qlib：量化投资AI框架实战教程',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://avatars.githubusercontent.com/u/40121337?v=4" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">37</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的博客</span></a><a class="nav-page-title" href="/"><span class="site-name">Microsoft Qlib：量化投资AI框架实战教程</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Microsoft Qlib：量化投资AI框架实战教程</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-04T16:23:55.000Z" title="发表于 2026-05-05 00:23:55">2026-05-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-17T15:46:18.378Z" title="更新于 2026-05-17 23:46:18">2026-05-17</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%87%8F%E5%8C%96%E9%87%91%E8%9E%8D/">量化金融</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="前言：为什么选择Qlib？"><a href="#前言：为什么选择Qlib？" class="headerlink" title="前言：为什么选择Qlib？"></a>前言：为什么选择Qlib？</h2><p>如果你是一名技术开发者，想要进入量化投资领域，你可能会面临这些问题：</p>
+<ul>
+<li><strong>数据从哪里来？</strong> 如何高效存储和检索海量金融数据？</li>
+<li><strong>特征怎么构建？</strong> 158个技术因子？360个？还是自己一个个写？</li>
+<li><strong>模型怎么选？</strong> LSTM、LightGBM、Transformer…哪个适合金融预测？</li>
+<li><strong>策略怎么回测？</strong> 如何模拟真实交易环境，考虑滑点、手续费、流动性？</li>
+<li><strong>如何系统化？</strong> 怎么把数据处理、模型训练、策略回测串联成完整流水线？</li>
+</ul>
+<p><strong>Microsoft Qlib</strong> 正是为解决这些问题而生的AI量化投资平台。它不是一个简单的回测框架，而是一个覆盖量化投资全流程的机器学习研究平台。</p>
+<blockquote>
+<p><strong>Qlib的定位</strong>：AI-oriented Quantitative Investment Platform（面向AI的量化投资平台）</p>
+<ul>
+<li>GitHub: <a target="_blank" rel="noopener" href="https://github.com/microsoft/qlib">https://github.com/microsoft/qlib</a></li>
+<li>Stars: 14K+</li>
+<li>开发者：微软亚洲研究院</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="一、Qlib架构设计理念"><a href="#一、Qlib架构设计理念" class="headerlink" title="一、Qlib架构设计理念"></a>一、Qlib架构设计理念</h2><h3 id="1-1-整体架构：四层设计"><a href="#1-1-整体架构：四层设计" class="headerlink" title="1.1 整体架构：四层设计"></a>1.1 整体架构：四层设计</h3><p>Qlib采用分层架构设计，从底层基础设施到上层用户接口，共分为四层：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────────┐</span><br><span class="line">│                    Interface Layer（接口层）                  │</span><br><span class="line">│         Analyser: 提供预测信号、投资组合、执行结果的分析报告        │</span><br><span class="line">├─────────────────────────────────────────────────────────────┤</span><br><span class="line">│                    Workflow Layer（工作流层）                  │</span><br><span class="line">│  Information Extractor → Forecast Model → Decision Generator │</span><br><span class="line">│           → Execution Env → Strategy → Executor              │</span><br><span class="line">├─────────────────────────────────────────────────────────────┤</span><br><span class="line">│                Learning Framework Layer（学习框架层）           │</span><br><span class="line">│      Forecast Model &amp; Trading Agent（支持监督学习+强化学习）      │</span><br><span class="line">├─────────────────────────────────────────────────────────────┤</span><br><span class="line">│                Infrastructure Layer（基础设施层）              │</span><br><span class="line">│       DataServer: 高性能数据管理    Trainer: 灵活训练控制        │</span><br><span class="line">└─────────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<p><strong>各层职责</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>核心组件</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>基础设施层</td>
+<td>DataServer, Trainer</td>
+<td>数据存储检索、训练过程控制</td>
+</tr>
+<tr>
+<td>学习框架层</td>
+<td>Forecast Model, Trading Agent</td>
+<td>模型训练、策略学习</td>
+</tr>
+<tr>
+<td>工作流层</td>
+<td>Strategy, Executor, Analyser</td>
+<td>策略生成、订单执行、结果分析</td>
+</tr>
+<tr>
+<td>接口层</td>
+<td>Analyser</td>
+<td>用户友好的分析报告</td>
+</tr>
+</tbody></table>
+<h3 id="1-2-模块化设计哲学"><a href="#1-2-模块化设计哲学" class="headerlink" title="1.2 模块化设计哲学"></a>1.2 模块化设计哲学</h3><p>Qlib的核心设计理念是<strong>松耦合</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 每个模块都可以独立使用</span></span><br><span class="line"><span class="keyword">from</span> qlib.data.dataset <span class="keyword">import</span> DatasetH          <span class="comment"># 数据模块</span></span><br><span class="line"><span class="keyword">from</span> qlib.contrib.model.gbdt <span class="keyword">import</span> LGBModel    <span class="comment"># 模型模块</span></span><br><span class="line"><span class="keyword">from</span> qlib.contrib.strategy <span class="keyword">import</span> TopkDropoutStrategy  <span class="comment"># 策略模块</span></span><br><span class="line"><span class="keyword">from</span> qlib.backtest <span class="keyword">import</span> backtest              <span class="comment"># 回测模块</span></span><br></pre></td></tr></table></figure>
+
+<p>这种设计的好处：</p>
+<ol>
+<li><strong>灵活替换</strong>：不满意某个模型？换成自己的实现</li>
+<li><strong>渐进学习</strong>：先掌握数据处理，再学模型训练，最后回测</li>
+<li><strong>复用性强</strong>：同一套数据可以用于多个模型实验</li>
+</ol>
+<h3 id="1-3-配置驱动流水线（CDPE）"><a href="#1-3-配置驱动流水线（CDPE）" class="headerlink" title="1.3 配置驱动流水线（CDPE）"></a>1.3 配置驱动流水线（CDPE）</h3><p>Qlib提供了<strong>Config-Driven Pipeline Engine</strong>，用YAML配置定义整个工作流：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 一个完整的量化研究工作流配置</span></span><br><span class="line"><span class="attr">task:</span></span><br><span class="line">  <span class="attr">model:</span></span><br><span class="line">    <span class="attr">class:</span> <span class="string">LGBModel</span></span><br><span class="line">    <span class="attr">module_path:</span> <span class="string">qlib.contrib.model.gbdt</span></span><br><span class="line">    <span class="attr">kwargs:</span></span><br><span class="line">      <span class="attr">loss:</span> <span class="string">mse</span></span><br><span class="line">      <span class="attr">learning_rate:</span> <span class="number">0.05</span></span><br><span class="line">  <span class="attr">dataset:</span></span><br><span class="line">    <span class="attr">class:</span> <span class="string">DatasetH</span></span><br><span class="line">    <span class="attr">module_path:</span> <span class="string">qlib.data.dataset</span></span><br><span class="line">    <span class="attr">kwargs:</span></span><br><span class="line">      <span class="attr">handler:</span></span><br><span class="line">        <span class="attr">class:</span> <span class="string">Alpha158</span>  <span class="comment"># 内置158因子</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、数据处理流水线"><a href="#二、数据处理流水线" class="headerlink" title="二、数据处理流水线"></a>二、数据处理流水线</h2><h3 id="2-1-数据存储设计"><a href="#2-1-数据存储设计" class="headerlink" title="2.1 数据存储设计"></a>2.1 数据存储设计</h3><p>Qlib使用<strong>时间序列扁平文件存储</strong>，专为金融数据优化：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">qlib_data/</span><br><span class="line">├── calendars/</span><br><span class="line">│   └── day.txt          # 交易日历</span><br><span class="line">├── instruments/</span><br><span class="line">│   └── csi300.txt       # 股票池定义</span><br><span class="line">└── features/</span><br><span class="line">    └── SH000001/</span><br><span class="line">        ├── close.day.bin    # 收盘价（二进制存储）</span><br><span class="line">        ├── open.day.bin</span><br><span class="line">        └── volume.day.bin</span><br></pre></td></tr></table></figure>
+
+<p><strong>性能优势</strong>：</p>
+<ul>
+<li>二进制存储，读取速度快</li>
+<li>内置缓存机制，避免重复计算</li>
+<li>支持表达式计算，如 <code>$close / $open</code></li>
+</ul>
+<h3 id="2-2-快速初始化数据"><a href="#2-2-快速初始化数据" class="headerlink" title="2.2 快速初始化数据"></a>2.2 快速初始化数据</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> qlib</span><br><span class="line"><span class="keyword">from</span> qlib.data <span class="keyword">import</span> D</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方式1：使用内置数据（1分钟下载）</span></span><br><span class="line">qlib.init(provider_uri=<span class="string">&#x27;~/.qlib/qlib_data/cn_data&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方式2：自定义数据路径</span></span><br><span class="line">qlib.init(provider_uri=<span class="string">&#x27;./my_data&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-数据API详解"><a href="#2-3-数据API详解" class="headerlink" title="2.3 数据API详解"></a>2.3 数据API详解</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.data <span class="keyword">import</span> D</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 获取单只股票数据</span></span><br><span class="line">close = D.features(</span><br><span class="line">    instruments=[<span class="string">&quot;SH000001&quot;</span>],           <span class="comment"># 股票代码</span></span><br><span class="line">    fields=[<span class="string">&quot;$close&quot;</span>, <span class="string">&quot;$open&quot;</span>],         <span class="comment"># 字段</span></span><br><span class="line">    start_time=<span class="string">&quot;2020-01-01&quot;</span>,</span><br><span class="line">    end_time=<span class="string">&quot;2020-12-31&quot;</span>,</span><br><span class="line">    freq=<span class="string">&quot;day&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 获取整个股票池数据</span></span><br><span class="line">csi300_data = D.features(</span><br><span class="line">    D.instruments(market=<span class="string">&quot;csi300&quot;</span>),     <span class="comment"># 沪深300成分股</span></span><br><span class="line">    [<span class="string">&quot;$close&quot;</span>, <span class="string">&quot;$open&quot;</span>, <span class="string">&quot;$high&quot;</span>, <span class="string">&quot;$low&quot;</span>],</span><br><span class="line">    start_time=<span class="string">&quot;2020-01-01&quot;</span>,</span><br><span class="line">    end_time=<span class="string">&quot;2020-12-31&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 表达式计算（因子构建）</span></span><br><span class="line">factor = D.features(</span><br><span class="line">    [<span class="string">&quot;SH000001&quot;</span>],</span><br><span class="line">    [<span class="string">&quot;($close - $open) / $open&quot;</span>,        <span class="comment"># 日收益率</span></span><br><span class="line">     <span class="string">&quot;Mean($close, 5)&quot;</span>,                  <span class="comment"># 5日均线</span></span><br><span class="line">     <span class="string">&quot;Std($close, 20)&quot;</span>],                 <span class="comment"># 20日标准差</span></span><br><span class="line">    start_time=<span class="string">&quot;2020-01-01&quot;</span>,</span><br><span class="line">    end_time=<span class="string">&quot;2020-12-31&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-数据处理器与特征工程"><a href="#2-4-数据处理器与特征工程" class="headerlink" title="2.4 数据处理器与特征工程"></a>2.4 数据处理器与特征工程</h3><p>Qlib提供了强大的<strong>DataHandler</strong>进行特征工程：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.contrib.data.handler <span class="keyword">import</span> Alpha158</span><br><span class="line"></span><br><span class="line"><span class="comment"># Alpha158：内置158个技术因子</span></span><br><span class="line">handler_config = &#123;</span><br><span class="line">    <span class="string">&quot;start_time&quot;</span>: <span class="string">&quot;2010-01-01&quot;</span>,</span><br><span class="line">    <span class="string">&quot;end_time&quot;</span>: <span class="string">&quot;2020-12-31&quot;</span>,</span><br><span class="line">    <span class="string">&quot;fit_start_time&quot;</span>: <span class="string">&quot;2010-01-01&quot;</span>,</span><br><span class="line">    <span class="string">&quot;fit_end_time&quot;</span>: <span class="string">&quot;2017-12-31&quot;</span>,</span><br><span class="line">    <span class="string">&quot;instruments&quot;</span>: <span class="string">&quot;csi300&quot;</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">handler = Alpha158(**handler_config)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Alpha158包含的因子类型：</span></span><br><span class="line"><span class="comment"># - KBAR系列：开高低收相关</span></span><br><span class="line"><span class="comment"># - KDJ系列：随机指标</span></span><br><span class="line"><span class="comment"># - RSI系列：相对强弱指标</span></span><br><span class="line"><span class="comment"># - MACD系列：指数平滑异同移动平均</span></span><br><span class="line"><span class="comment"># - BOLL系列：布林带</span></span><br><span class="line"><span class="comment"># ... 共158个</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>自定义数据处理器</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.data.dataset.handler <span class="keyword">import</span> DataHandlerLP</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyCustomHandler</span>(<span class="title class_ inherited__">DataHandlerLP</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">fit_process</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="comment"># 自定义特征工程逻辑</span></span><br><span class="line">        df = <span class="variable language_">self</span>.fetch()</span><br><span class="line">        df[<span class="string">&#x27;my_factor&#x27;</span>] = df[<span class="string">&#x27;$close&#x27;</span>] / df[<span class="string">&#x27;$open&#x27;</span>] - <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> df</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-5-数据集划分"><a href="#2-5-数据集划分" class="headerlink" title="2.5 数据集划分"></a>2.5 数据集划分</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.data.dataset <span class="keyword">import</span> DatasetH</span><br><span class="line"></span><br><span class="line">dataset = DatasetH(</span><br><span class="line">    handler=&#123;</span><br><span class="line">        <span class="string">&quot;class&quot;</span>: <span class="string">&quot;Alpha158&quot;</span>,</span><br><span class="line">        <span class="string">&quot;module_path&quot;</span>: <span class="string">&quot;qlib.contrib.data.handler&quot;</span>,</span><br><span class="line">        <span class="string">&quot;kwargs&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;start_time&quot;</span>: <span class="string">&quot;2008-01-01&quot;</span>,</span><br><span class="line">            <span class="string">&quot;end_time&quot;</span>: <span class="string">&quot;2020-08-01&quot;</span>,</span><br><span class="line">            <span class="string">&quot;instruments&quot;</span>: <span class="string">&quot;csi300&quot;</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    segments=&#123;</span><br><span class="line">        <span class="string">&quot;train&quot;</span>: (<span class="string">&quot;2008-01-01&quot;</span>, <span class="string">&quot;2014-12-31&quot;</span>),  <span class="comment"># 训练集</span></span><br><span class="line">        <span class="string">&quot;valid&quot;</span>: (<span class="string">&quot;2015-01-01&quot;</span>, <span class="string">&quot;2016-12-31&quot;</span>),  <span class="comment"># 验证集</span></span><br><span class="line">        <span class="string">&quot;test&quot;</span>: (<span class="string">&quot;2017-01-01&quot;</span>, <span class="string">&quot;2020-08-01&quot;</span>),   <span class="comment"># 测试集</span></span><br><span class="line">    &#125;,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、模型训练与预测"><a href="#三、模型训练与预测" class="headerlink" title="三、模型训练与预测"></a>三、模型训练与预测</h2><h3 id="3-1-内置模型库"><a href="#3-1-内置模型库" class="headerlink" title="3.1 内置模型库"></a>3.1 内置模型库</h3><p>Qlib内置了丰富的机器学习模型：</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>类型</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LGBModel</td>
+<td>GBDT</td>
+<td>表格数据，速度快</td>
+</tr>
+<tr>
+<td>MLPModel</td>
+<td>神经网络</td>
+<td>非线性关系</td>
+</tr>
+<tr>
+<td>GRUModel</td>
+<td>RNN</td>
+<td>时序依赖</td>
+</tr>
+<tr>
+<td>LSTMModel</td>
+<td>RNN</td>
+<td>长期记忆</td>
+</tr>
+<tr>
+<td>TFTModel</td>
+<td>Transformer</td>
+<td>多变量时序</td>
+</tr>
+<tr>
+<td>GATsModel</td>
+<td>图神经网络</td>
+<td>股票关联</td>
+</tr>
+</tbody></table>
+<h3 id="3-2-LightGBM模型实战"><a href="#3-2-LightGBM模型实战" class="headerlink" title="3.2 LightGBM模型实战"></a>3.2 LightGBM模型实战</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.utils <span class="keyword">import</span> init_instance_by_config</span><br><span class="line"></span><br><span class="line"><span class="comment"># 模型配置</span></span><br><span class="line">model_config = &#123;</span><br><span class="line">    <span class="string">&quot;class&quot;</span>: <span class="string">&quot;LGBModel&quot;</span>,</span><br><span class="line">    <span class="string">&quot;module_path&quot;</span>: <span class="string">&quot;qlib.contrib.model.gbdt&quot;</span>,</span><br><span class="line">    <span class="string">&quot;kwargs&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;loss&quot;</span>: <span class="string">&quot;mse&quot;</span>,                    <span class="comment"># 损失函数</span></span><br><span class="line">        <span class="string">&quot;colsample_bytree&quot;</span>: <span class="number">0.8879</span>,       <span class="comment"># 特征采样比例</span></span><br><span class="line">        <span class="string">&quot;learning_rate&quot;</span>: <span class="number">0.0421</span>,          <span class="comment"># 学习率</span></span><br><span class="line">        <span class="string">&quot;subsample&quot;</span>: <span class="number">0.8789</span>,              <span class="comment"># 样本采样比例</span></span><br><span class="line">        <span class="string">&quot;lambda_l1&quot;</span>: <span class="number">205.6999</span>,            <span class="comment"># L1正则化</span></span><br><span class="line">        <span class="string">&quot;lambda_l2&quot;</span>: <span class="number">580.9768</span>,            <span class="comment"># L2正则化</span></span><br><span class="line">        <span class="string">&quot;max_depth&quot;</span>: <span class="number">8</span>,                   <span class="comment"># 树深度</span></span><br><span class="line">        <span class="string">&quot;num_leaves&quot;</span>: <span class="number">210</span>,                <span class="comment"># 叶子节点数</span></span><br><span class="line">        <span class="string">&quot;num_threads&quot;</span>: <span class="number">20</span>,                <span class="comment"># 并行线程数</span></span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化模型</span></span><br><span class="line">model = init_instance_by_config(model_config)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">model.fit(dataset)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 预测</span></span><br><span class="line">predictions = model.predict(dataset)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-实验管理与记录"><a href="#3-3-实验管理与记录" class="headerlink" title="3.3 实验管理与记录"></a>3.3 实验管理与记录</h3><p>Qlib内置了完善的实验管理系统：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.workflow <span class="keyword">import</span> R</span><br><span class="line"><span class="keyword">from</span> qlib.workflow.record_temp <span class="keyword">import</span> SignalRecord</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开始实验</span></span><br><span class="line"><span class="keyword">with</span> R.start(experiment_name=<span class="string">&quot;my_experiment&quot;</span>):</span><br><span class="line">    <span class="comment"># 记录超参数</span></span><br><span class="line">    R.log_params(learning_rate=<span class="number">0.05</span>, model=<span class="string">&quot;LightGBM&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 训练模型</span></span><br><span class="line">    model.fit(dataset)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 保存模型</span></span><br><span class="line">    R.save_objects(trained_model=model)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 获取实验记录器ID</span></span><br><span class="line">    recorder_id = R.get_recorder().<span class="built_in">id</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 生成预测信号记录</span></span><br><span class="line">    sr = SignalRecord(model, dataset, R.get_recorder())</span><br><span class="line">    sr.generate()</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-4-自定义模型开发"><a href="#3-4-自定义模型开发" class="headerlink" title="3.4 自定义模型开发"></a>3.4 自定义模型开发</h3><p>继承<code>qlib.model.base.Model</code>即可开发自定义模型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.model.base <span class="keyword">import</span> Model</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyCustomModel</span>(<span class="title class_ inherited__">Model</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, **kwargs</span>):</span><br><span class="line">        <span class="comment"># 初始化参数</span></span><br><span class="line">        <span class="variable language_">self</span>.params = kwargs</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">fit</span>(<span class="params">self, dataset</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        训练模型</span></span><br><span class="line"><span class="string">        dataset: Qlib数据集对象</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="comment"># 获取训练数据</span></span><br><span class="line">        train_data = dataset.prepare(<span class="string">&quot;train&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 实现你的训练逻辑</span></span><br><span class="line">        <span class="comment"># self._train_your_model(train_data)</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">predict</span>(<span class="params">self, dataset</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        预测</span></span><br><span class="line"><span class="string">        返回: pd.Series，索引为(instrument, datetime)</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        test_data = dataset.prepare(<span class="string">&quot;test&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 实现你的预测逻辑</span></span><br><span class="line">        predictions = <span class="variable language_">self</span>._make_predictions(test_data)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> predictions</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">finetune</span>(<span class="params">self, dataset</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        微调（可选）</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>配置使用自定义模型</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">model:</span></span><br><span class="line">  <span class="attr">class:</span> <span class="string">MyCustomModel</span></span><br><span class="line">  <span class="attr">module_path:</span> <span class="string">my_module.custom_model</span>  <span class="comment"># 你的模块路径</span></span><br><span class="line">  <span class="attr">kwargs:</span></span><br><span class="line">    <span class="attr">param1:</span> <span class="string">value1</span></span><br><span class="line">    <span class="attr">param2:</span> <span class="string">value2</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、回测系统详解"><a href="#四、回测系统详解" class="headerlink" title="四、回测系统详解"></a>四、回测系统详解</h2><h3 id="4-1-回测核心概念"><a href="#4-1-回测核心概念" class="headerlink" title="4.1 回测核心概念"></a>4.1 回测核心概念</h3><p>Qlib的回测系统包含三个核心组件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Strategy（策略）→ Executor（执行器）→ Account（账户）</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Strategy</strong>：生成交易决策（买入&#x2F;卖出哪些股票）</li>
+<li><strong>Executor</strong>：模拟订单执行（考虑滑点、手续费）</li>
+<li><strong>Account</strong>：管理资金和持仓</li>
+</ul>
+<h3 id="4-2-TopkDropout策略"><a href="#4-2-TopkDropout策略" class="headerlink" title="4.2 TopkDropout策略"></a>4.2 TopkDropout策略</h3><p>最常用的策略，逻辑简单但有效：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.contrib.strategy <span class="keyword">import</span> TopkDropoutStrategy</span><br><span class="line"></span><br><span class="line">strategy_config = &#123;</span><br><span class="line">    <span class="string">&quot;topk&quot;</span>: <span class="number">50</span>,           <span class="comment"># 持仓股票数量</span></span><br><span class="line">    <span class="string">&quot;n_drop&quot;</span>: <span class="number">5</span>,          <span class="comment"># 每次调仓替换数量</span></span><br><span class="line">    <span class="string">&quot;signal&quot;</span>: pred_score, <span class="comment"># 预测分数（pd.Series）</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">strategy = TopkDropoutStrategy(**strategy_config)</span><br></pre></td></tr></table></figure>
+
+<p><strong>策略逻辑</strong>：</p>
+<ol>
+<li>根据预测分数对股票排序</li>
+<li>选择分数最高的topk只股票持仓</li>
+<li>每期替换n_drop只分数下降最多的股票</li>
+</ol>
+<h3 id="4-3-回测执行器配置"><a href="#4-3-回测执行器配置" class="headerlink" title="4.3 回测执行器配置"></a>4.3 回测执行器配置</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.backtest <span class="keyword">import</span> executor</span><br><span class="line"></span><br><span class="line">executor_config = &#123;</span><br><span class="line">    <span class="string">&quot;time_per_step&quot;</span>: <span class="string">&quot;day&quot;</span>,              <span class="comment"># 交易频率</span></span><br><span class="line">    <span class="string">&quot;generate_portfolio_metrics&quot;</span>: <span class="literal">True</span>,  <span class="comment"># 生成组合指标</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 交易所配置</span></span><br><span class="line">exchange_config = &#123;</span><br><span class="line">    <span class="string">&quot;freq&quot;</span>: <span class="string">&quot;day&quot;</span>,</span><br><span class="line">    <span class="string">&quot;limit_threshold&quot;</span>: <span class="number">0.095</span>,   <span class="comment"># 涨跌停限制</span></span><br><span class="line">    <span class="string">&quot;deal_price&quot;</span>: <span class="string">&quot;close&quot;</span>,      <span class="comment"># 成交价格</span></span><br><span class="line">    <span class="string">&quot;open_cost&quot;</span>: <span class="number">0.0005</span>,        <span class="comment"># 开仓成本（0.05%）</span></span><br><span class="line">    <span class="string">&quot;close_cost&quot;</span>: <span class="number">0.0015</span>,       <span class="comment"># 平仓成本（0.15%）</span></span><br><span class="line">    <span class="string">&quot;min_cost&quot;</span>: <span class="number">5</span>,              <span class="comment"># 最小手续费（5元）</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-4-完整回测示例"><a href="#4-4-完整回测示例" class="headerlink" title="4.4 完整回测示例"></a>4.4 完整回测示例</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.backtest <span class="keyword">import</span> backtest</span><br><span class="line"><span class="keyword">from</span> qlib.contrib.evaluate <span class="keyword">import</span> risk_analysis</span><br><span class="line"><span class="keyword">from</span> qlib.contrib.strategy <span class="keyword">import</span> TopkDropoutStrategy</span><br><span class="line"></span><br><span class="line"><span class="comment"># 回测配置</span></span><br><span class="line">backtest_config = &#123;</span><br><span class="line">    <span class="string">&quot;start_time&quot;</span>: <span class="string">&quot;2017-01-01&quot;</span>,</span><br><span class="line">    <span class="string">&quot;end_time&quot;</span>: <span class="string">&quot;2020-08-01&quot;</span>,</span><br><span class="line">    <span class="string">&quot;account&quot;</span>: <span class="number">100000000</span>,         <span class="comment"># 初始资金：1亿</span></span><br><span class="line">    <span class="string">&quot;benchmark&quot;</span>: <span class="string">&quot;SH000300&quot;</span>,      <span class="comment"># 基准：沪深300</span></span><br><span class="line">    <span class="string">&quot;exchange_kwargs&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;freq&quot;</span>: <span class="string">&quot;day&quot;</span>,</span><br><span class="line">        <span class="string">&quot;limit_threshold&quot;</span>: <span class="number">0.095</span>,</span><br><span class="line">        <span class="string">&quot;deal_price&quot;</span>: <span class="string">&quot;close&quot;</span>,</span><br><span class="line">        <span class="string">&quot;open_cost&quot;</span>: <span class="number">0.0005</span>,</span><br><span class="line">        <span class="string">&quot;close_cost&quot;</span>: <span class="number">0.0015</span>,</span><br><span class="line">        <span class="string">&quot;min_cost&quot;</span>: <span class="number">5</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建策略</span></span><br><span class="line">strategy = TopkDropoutStrategy(</span><br><span class="line">    topk=<span class="number">50</span>,</span><br><span class="line">    n_drop=<span class="number">5</span>,</span><br><span class="line">    signal=predictions  <span class="comment"># 模型预测结果</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建执行器</span></span><br><span class="line">executor_obj = executor.SimulatorExecutor(</span><br><span class="line">    time_per_step=<span class="string">&quot;day&quot;</span>,</span><br><span class="line">    generate_portfolio_metrics=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行回测</span></span><br><span class="line">portfolio_metric_dict, indicator_dict = backtest(</span><br><span class="line">    executor=executor_obj,</span><br><span class="line">    strategy=strategy,</span><br><span class="line">    **backtest_config</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取回测结果</span></span><br><span class="line">report_normal, positions_normal = portfolio_metric_dict.get(<span class="string">&quot;day&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 风险分析</span></span><br><span class="line">analysis = risk_analysis(report_normal[<span class="string">&quot;return&quot;</span>], freq=<span class="string">&quot;day&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(analysis)</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-5-回测结果分析"><a href="#4-5-回测结果分析" class="headerlink" title="4.5 回测结果分析"></a>4.5 回测结果分析</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.contrib.evaluate <span class="keyword">import</span> risk_analysis</span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算超额收益</span></span><br><span class="line">excess_return_without_cost = risk_analysis(</span><br><span class="line">    report_normal[<span class="string">&quot;return&quot;</span>] - report_normal[<span class="string">&quot;bench&quot;</span>],</span><br><span class="line">    freq=<span class="string">&quot;day&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">excess_return_with_cost = risk_analysis(</span><br><span class="line">    report_normal[<span class="string">&quot;return&quot;</span>] - report_normal[<span class="string">&quot;bench&quot;</span>] - report_normal[<span class="string">&quot;cost&quot;</span>],</span><br><span class="line">    freq=<span class="string">&quot;day&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出关键指标</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;=&quot;</span> * <span class="number">50</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;策略表现分析&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;=&quot;</span> * <span class="number">50</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;年化收益率: <span class="subst">&#123;analysis[<span class="string">&#x27;annualized_return&#x27;</span>]:<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;夏普比率: <span class="subst">&#123;analysis[<span class="string">&#x27;sharpe_ratio&#x27;</span>]:<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;最大回撤: <span class="subst">&#123;analysis[<span class="string">&#x27;max_drawdown&#x27;</span>]:<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;信息比率: <span class="subst">&#123;analysis[<span class="string">&#x27;information_ratio&#x27;</span>]:<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、完整工作流实战"><a href="#五、完整工作流实战" class="headerlink" title="五、完整工作流实战"></a>五、完整工作流实战</h2><h3 id="5-1-一键运行：qrun"><a href="#5-1-一键运行：qrun" class="headerlink" title="5.1 一键运行：qrun"></a>5.1 一键运行：qrun</h3><p>Qlib提供了<code>qrun</code>命令行工具，一行命令运行完整工作流：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载配置文件示例</span></span><br><span class="line">wget https://raw.githubusercontent.com/microsoft/qlib/main/examples/benchmarks/LightGBM/lightgbm_config.yaml</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行完整工作流</span></span><br><span class="line">qrun lightgbm_config.yaml</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-完整代码示例"><a href="#5-2-完整代码示例" class="headerlink" title="5.2 完整代码示例"></a>5.2 完整代码示例</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">Qlib完整工作流示例</span></span><br><span class="line"><span class="string">包含：数据准备 → 模型训练 → 回测分析</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> qlib</span><br><span class="line"><span class="keyword">from</span> qlib.utils <span class="keyword">import</span> init_instance_by_config, flatten_dict</span><br><span class="line"><span class="keyword">from</span> qlib.workflow <span class="keyword">import</span> R</span><br><span class="line"><span class="keyword">from</span> qlib.workflow.record_temp <span class="keyword">import</span> SignalRecord, PortAnaRecord</span><br><span class="line"></span><br><span class="line"><span class="comment"># ==================== 1. 初始化Qlib ====================</span></span><br><span class="line">qlib.init(provider_uri=<span class="string">&quot;~/.qlib/qlib_data/cn_data&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置参数</span></span><br><span class="line">MARKET = <span class="string">&quot;csi300&quot;</span>           <span class="comment"># 沪深300</span></span><br><span class="line">BENCHMARK = <span class="string">&quot;SH000300&quot;</span>      <span class="comment"># 基准指数</span></span><br><span class="line">EXP_NAME = <span class="string">&quot;qlib_demo&quot;</span>      <span class="comment"># 实验名称</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ==================== 2. 定义任务配置 ====================</span></span><br><span class="line"><span class="comment"># 数据处理器配置</span></span><br><span class="line">data_handler_config = &#123;</span><br><span class="line">    <span class="string">&quot;start_time&quot;</span>: <span class="string">&quot;2008-01-01&quot;</span>,</span><br><span class="line">    <span class="string">&quot;end_time&quot;</span>: <span class="string">&quot;2020-08-01&quot;</span>,</span><br><span class="line">    <span class="string">&quot;fit_start_time&quot;</span>: <span class="string">&quot;2008-01-01&quot;</span>,</span><br><span class="line">    <span class="string">&quot;fit_end_time&quot;</span>: <span class="string">&quot;2014-12-31&quot;</span>,</span><br><span class="line">    <span class="string">&quot;instruments&quot;</span>: MARKET,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 完整任务配置</span></span><br><span class="line">task = &#123;</span><br><span class="line">    <span class="string">&quot;model&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;class&quot;</span>: <span class="string">&quot;LGBModel&quot;</span>,</span><br><span class="line">        <span class="string">&quot;module_path&quot;</span>: <span class="string">&quot;qlib.contrib.model.gbdt&quot;</span>,</span><br><span class="line">        <span class="string">&quot;kwargs&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;loss&quot;</span>: <span class="string">&quot;mse&quot;</span>,</span><br><span class="line">            <span class="string">&quot;colsample_bytree&quot;</span>: <span class="number">0.8879</span>,</span><br><span class="line">            <span class="string">&quot;learning_rate&quot;</span>: <span class="number">0.0421</span>,</span><br><span class="line">            <span class="string">&quot;subsample&quot;</span>: <span class="number">0.8789</span>,</span><br><span class="line">            <span class="string">&quot;lambda_l1&quot;</span>: <span class="number">205.6999</span>,</span><br><span class="line">            <span class="string">&quot;lambda_l2&quot;</span>: <span class="number">580.9768</span>,</span><br><span class="line">            <span class="string">&quot;max_depth&quot;</span>: <span class="number">8</span>,</span><br><span class="line">            <span class="string">&quot;num_leaves&quot;</span>: <span class="number">210</span>,</span><br><span class="line">            <span class="string">&quot;num_threads&quot;</span>: <span class="number">20</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;dataset&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;class&quot;</span>: <span class="string">&quot;DatasetH&quot;</span>,</span><br><span class="line">        <span class="string">&quot;module_path&quot;</span>: <span class="string">&quot;qlib.data.dataset&quot;</span>,</span><br><span class="line">        <span class="string">&quot;kwargs&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;handler&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;class&quot;</span>: <span class="string">&quot;Alpha158&quot;</span>,</span><br><span class="line">                <span class="string">&quot;module_path&quot;</span>: <span class="string">&quot;qlib.contrib.data.handler&quot;</span>,</span><br><span class="line">                <span class="string">&quot;kwargs&quot;</span>: data_handler_config,</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="string">&quot;segments&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;train&quot;</span>: (<span class="string">&quot;2008-01-01&quot;</span>, <span class="string">&quot;2014-12-31&quot;</span>),</span><br><span class="line">                <span class="string">&quot;valid&quot;</span>: (<span class="string">&quot;2015-01-01&quot;</span>, <span class="string">&quot;2016-12-31&quot;</span>),</span><br><span class="line">                <span class="string">&quot;test&quot;</span>: (<span class="string">&quot;2017-01-01&quot;</span>, <span class="string">&quot;2020-08-01&quot;</span>),</span><br><span class="line">            &#125;,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># ==================== 3. 模型训练 ====================</span></span><br><span class="line">model = init_instance_by_config(task[<span class="string">&quot;model&quot;</span>])</span><br><span class="line">dataset = init_instance_by_config(task[<span class="string">&quot;dataset&quot;</span>])</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> R.start(experiment_name=<span class="string">&quot;train_model&quot;</span>):</span><br><span class="line">    R.log_params(**flatten_dict(task))</span><br><span class="line">    model.fit(dataset)</span><br><span class="line">    R.save_objects(trained_model=model)</span><br><span class="line">    rid = R.get_recorder().<span class="built_in">id</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;模型已保存，recorder_id: <span class="subst">&#123;rid&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ==================== 4. 回测配置 ====================</span></span><br><span class="line">port_analysis_config = &#123;</span><br><span class="line">    <span class="string">&quot;executor&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;class&quot;</span>: <span class="string">&quot;SimulatorExecutor&quot;</span>,</span><br><span class="line">        <span class="string">&quot;module_path&quot;</span>: <span class="string">&quot;qlib.backtest.executor&quot;</span>,</span><br><span class="line">        <span class="string">&quot;kwargs&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;time_per_step&quot;</span>: <span class="string">&quot;day&quot;</span>,</span><br><span class="line">            <span class="string">&quot;generate_portfolio_metrics&quot;</span>: <span class="literal">True</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;strategy&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;class&quot;</span>: <span class="string">&quot;TopkDropoutStrategy&quot;</span>,</span><br><span class="line">        <span class="string">&quot;module_path&quot;</span>: <span class="string">&quot;qlib.contrib.strategy.signal_strategy&quot;</span>,</span><br><span class="line">        <span class="string">&quot;kwargs&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;topk&quot;</span>: <span class="number">50</span>,</span><br><span class="line">            <span class="string">&quot;n_drop&quot;</span>: <span class="number">5</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;backtest&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;start_time&quot;</span>: <span class="string">&quot;2017-01-01&quot;</span>,</span><br><span class="line">        <span class="string">&quot;end_time&quot;</span>: <span class="string">&quot;2020-08-01&quot;</span>,</span><br><span class="line">        <span class="string">&quot;account&quot;</span>: <span class="number">100000000</span>,</span><br><span class="line">        <span class="string">&quot;benchmark&quot;</span>: BENCHMARK,</span><br><span class="line">        <span class="string">&quot;exchange_kwargs&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;freq&quot;</span>: <span class="string">&quot;day&quot;</span>,</span><br><span class="line">            <span class="string">&quot;limit_threshold&quot;</span>: <span class="number">0.095</span>,</span><br><span class="line">            <span class="string">&quot;deal_price&quot;</span>: <span class="string">&quot;close&quot;</span>,</span><br><span class="line">            <span class="string">&quot;open_cost&quot;</span>: <span class="number">0.0005</span>,</span><br><span class="line">            <span class="string">&quot;close_cost&quot;</span>: <span class="number">0.0015</span>,</span><br><span class="line">            <span class="string">&quot;min_cost&quot;</span>: <span class="number">5</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># ==================== 5. 执行回测 ====================</span></span><br><span class="line"><span class="keyword">with</span> R.start(experiment_name=<span class="string">&quot;backtest_analysis&quot;</span>):</span><br><span class="line">    <span class="comment"># 加载训练好的模型</span></span><br><span class="line">    recorder = R.get_recorder(recorder_id=rid, experiment_name=<span class="string">&quot;train_model&quot;</span>)</span><br><span class="line">    model = recorder.load_object(<span class="string">&quot;trained_model&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 生成预测信号</span></span><br><span class="line">    sr = SignalRecord(model, dataset, R.get_recorder())</span><br><span class="line">    sr.generate()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 执行回测分析</span></span><br><span class="line">    par = PortAnaRecord(R.get_recorder(), port_analysis_config, <span class="string">&quot;day&quot;</span>)</span><br><span class="line">    par.generate()</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;回测完成！请查看实验记录获取详细结果。&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、与其他量化框架对比"><a href="#六、与其他量化框架对比" class="headerlink" title="六、与其他量化框架对比"></a>六、与其他量化框架对比</h2><h3 id="6-1-主流量化框架概览"><a href="#6-1-主流量化框架概览" class="headerlink" title="6.1 主流量化框架概览"></a>6.1 主流量化框架概览</h3><table>
+<thead>
+<tr>
+<th>框架</th>
+<th>开发者</th>
+<th>核心定位</th>
+<th>Stars</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Qlib</strong></td>
+<td>Microsoft</td>
+<td>AI量化研究平台</td>
+<td>14K+</td>
+</tr>
+<tr>
+<td><strong>Backtrader</strong></td>
+<td>mementum</td>
+<td>事件驱动回测</td>
+<td>14K+</td>
+</tr>
+<tr>
+<td><strong>VnPy</strong></td>
+<td>社区</td>
+<td>全栈量化交易</td>
+<td>24K+</td>
+</tr>
+<tr>
+<td><strong>Zipline</strong></td>
+<td>Quantopian</td>
+<td>因子研究</td>
+<td>16K+</td>
+</tr>
+</tbody></table>
+<h3 id="6-2-详细对比分析"><a href="#6-2-详细对比分析" class="headerlink" title="6.2 详细对比分析"></a>6.2 详细对比分析</h3><h4 id="Qlib-vs-Backtrader"><a href="#Qlib-vs-Backtrader" class="headerlink" title="Qlib vs Backtrader"></a>Qlib vs Backtrader</h4><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Qlib</th>
+<th>Backtrader</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>核心定位</strong></td>
+<td>AI量化研究平台</td>
+<td>事件驱动回测引擎</td>
+</tr>
+<tr>
+<td><strong>机器学习</strong></td>
+<td>✅ 内置丰富模型库</td>
+<td>❌ 需自行集成</td>
+</tr>
+<tr>
+<td><strong>因子库</strong></td>
+<td>✅ Alpha158&#x2F;Alpha360</td>
+<td>❌ 需自己实现</td>
+</tr>
+<tr>
+<td><strong>回测方式</strong></td>
+<td>向量化+事件驱动</td>
+<td>纯事件驱动</td>
+</tr>
+<tr>
+<td><strong>实盘交易</strong></td>
+<td>⚠️ 需额外开发</td>
+<td>✅ 支持IB等接口</td>
+</tr>
+<tr>
+<td><strong>学习曲线</strong></td>
+<td>较陡峭</td>
+<td>平缓</td>
+</tr>
+<tr>
+<td><strong>维护状态</strong></td>
+<td>✅ 活跃维护</td>
+<td>⚠️ 2019年后停止更新</td>
+</tr>
+</tbody></table>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>Qlib：机器学习因子研究、截面选股策略</li>
+<li>Backtrader：学习事件驱动概念、快速策略验证</li>
+</ul>
+<h4 id="Qlib-vs-VnPy"><a href="#Qlib-vs-VnPy" class="headerlink" title="Qlib vs VnPy"></a>Qlib vs VnPy</h4><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Qlib</th>
+<th>VnPy</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>核心定位</strong></td>
+<td>AI量化研究</td>
+<td>全栈量化交易</td>
+</tr>
+<tr>
+<td><strong>中国市场</strong></td>
+<td>✅ 内置A股数据</td>
+<td>✅ 原生CTP支持</td>
+</tr>
+<tr>
+<td><strong>实盘交易</strong></td>
+<td>⚠️ 较弱</td>
+<td>✅ 成熟实盘接口</td>
+</tr>
+<tr>
+<td><strong>GUI界面</strong></td>
+<td>❌ 无</td>
+<td>✅ 完善GUI</td>
+</tr>
+<tr>
+<td><strong>机器学习</strong></td>
+<td>✅ 核心优势</td>
+<td>⚠️ 集成较弱</td>
+</tr>
+<tr>
+<td><strong>策略类型</strong></td>
+<td>多因子选股</td>
+<td>CTA趋势跟踪</td>
+</tr>
+</tbody></table>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>Qlib：学术研究、因子挖掘、ML策略</li>
+<li>VnPy：CTA策略、期货实盘、国内市场</li>
+</ul>
+<h4 id="Qlib-vs-Zipline"><a href="#Qlib-vs-Zipline" class="headerlink" title="Qlib vs Zipline"></a>Qlib vs Zipline</h4><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Qlib</th>
+<th>Zipline</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Pipeline API</strong></td>
+<td>⚠️ 不同实现</td>
+<td>✅ 经典Pipeline</td>
+</tr>
+<tr>
+<td><strong>数据格式</strong></td>
+<td>自定义二进制</td>
+<td>Bundle格式</td>
+</tr>
+<tr>
+<td><strong>因子研究</strong></td>
+<td>✅ ML导向</td>
+<td>✅ 因子导向</td>
+</tr>
+<tr>
+<td><strong>动态股票池</strong></td>
+<td>✅ 支持</td>
+<td>✅ 核心特性</td>
+</tr>
+<tr>
+<td><strong>维护状态</strong></td>
+<td>✅ 活跃</td>
+<td>⚠️ 原版停止维护</td>
+</tr>
+</tbody></table>
+<h3 id="6-3-选择建议"><a href="#6-3-选择建议" class="headerlink" title="6.3 选择建议"></a>6.3 选择建议</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">你的需求                          推荐框架</span><br><span class="line">─────────────────────────────────────────────</span><br><span class="line">学习量化/入门                     → Backtrader</span><br><span class="line">ML因子挖掘/学术研究               → Qlib</span><br><span class="line">中国A股CTA策略/期货实盘           → VnPy</span><br><span class="line">美股因子研究/动态选股             → Zipline-Reloaded</span><br><span class="line">加密货币量化                      → VnPy</span><br><span class="line">多因子截面选股                    → Qlib</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-4-组合使用策略"><a href="#6-4-组合使用策略" class="headerlink" title="6.4 组合使用策略"></a>6.4 组合使用策略</h3><p>实际项目中，可以组合使用多个框架：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">学习阶段 → 研究阶段 → 生产阶段</span><br><span class="line">   ↓           ↓           ↓</span><br><span class="line">Backtrader   Qlib        VnPy</span><br><span class="line">(理解概念)  (因子研究)  (实盘部署)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、进阶主题"><a href="#七、进阶主题" class="headerlink" title="七、进阶主题"></a>七、进阶主题</h2><h3 id="7-1-强化学习模块"><a href="#7-1-强化学习模块" class="headerlink" title="7.1 强化学习模块"></a>7.1 强化学习模块</h3><p>Qlib支持强化学习策略：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.rl.contrib.executor <span class="keyword">import</span> SingleAssetOrderExecution</span><br><span class="line"></span><br><span class="line"><span class="comment"># RL组件</span></span><br><span class="line"><span class="comment"># - Simulator: 市场模拟器</span></span><br><span class="line"><span class="comment"># - State Interpreter: 状态解释器</span></span><br><span class="line"><span class="comment"># - Action Interpreter: 动作解释器</span></span><br><span class="line"><span class="comment"># - Reward Function: 奖励函数</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="7-2-超参数调优"><a href="#7-2-超参数调优" class="headerlink" title="7.2 超参数调优"></a>7.2 超参数调优</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.model.trainer <span class="keyword">import</span> task_train</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义参数搜索空间</span></span><br><span class="line">task_config = &#123;</span><br><span class="line">    <span class="string">&quot;model&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;kwargs&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;learning_rate&quot;</span>: &#123;<span class="string">&quot;_type&quot;</span>: <span class="string">&quot;choice&quot;</span>, <span class="string">&quot;_value&quot;</span>: [<span class="number">0.01</span>, <span class="number">0.05</span>, <span class="number">0.1</span>]&#125;,</span><br><span class="line">            <span class="string">&quot;max_depth&quot;</span>: &#123;<span class="string">&quot;_type&quot;</span>: <span class="string">&quot;choice&quot;</span>, <span class="string">&quot;_value&quot;</span>: [<span class="number">6</span>, <span class="number">8</span>, <span class="number">10</span>]&#125;,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自动调参</span></span><br><span class="line">task_train(task_config)</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-3-模型集成"><a href="#7-3-模型集成" class="headerlink" title="7.3 模型集成"></a>7.3 模型集成</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.model.ens <span class="keyword">import</span> Ensemble</span><br><span class="line"></span><br><span class="line"><span class="comment"># 集成多个模型</span></span><br><span class="line">ensemble = Ensemble(</span><br><span class="line">    models=[model_lgb, model_lstm, model_transformer],</span><br><span class="line">    method=<span class="string">&quot;mean&quot;</span>  <span class="comment"># 或 &quot;vote&quot;, &quot;stacking&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="八、常见问题与解决方案"><a href="#八、常见问题与解决方案" class="headerlink" title="八、常见问题与解决方案"></a>八、常见问题与解决方案</h2><h3 id="Q1-数据从哪里获取？"><a href="#Q1-数据从哪里获取？" class="headerlink" title="Q1: 数据从哪里获取？"></a>Q1: 数据从哪里获取？</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用Qlib内置数据下载工具</span></span><br><span class="line">python -m qlib.run.get_data qlib_data</span><br></pre></td></tr></table></figure>
+
+<p>或使用第三方数据源（Tushare、AKShare）转换：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.data <span class="keyword">import</span> D</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将CSV转换为Qlib格式</span></span><br><span class="line">D.dump_data(file_path=<span class="string">&quot;./my_data.csv&quot;</span>, target_dir=<span class="string">&quot;./qlib_data&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Q2-如何添加自定义因子？"><a href="#Q2-如何添加自定义因子？" class="headerlink" title="Q2: 如何添加自定义因子？"></a>Q2: 如何添加自定义因子？</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.data.expr <span class="keyword">import</span> Expression</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义自定义因子</span></span><br><span class="line"><span class="meta">@Expression.register(<span class="params"><span class="string">&quot;my_factor&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">my_factor</span>(<span class="params">close, volume</span>):</span><br><span class="line">    <span class="keyword">return</span> close / volume.rolling(<span class="number">5</span>).mean()</span><br></pre></td></tr></table></figure>
+
+<h3 id="Q3-回测速度慢怎么办？"><a href="#Q3-回测速度慢怎么办？" class="headerlink" title="Q3: 回测速度慢怎么办？"></a>Q3: 回测速度慢怎么办？</h3><ul>
+<li>使用<code>Alpha158</code>而非<code>Alpha360</code></li>
+<li>减少股票池大小</li>
+<li>使用更粗的时间粒度（day而非minute）</li>
+<li>启用数据缓存</li>
+</ul>
+<h3 id="Q4-如何可视化结果？"><a href="#Q4-如何可视化结果？" class="headerlink" title="Q4: 如何可视化结果？"></a>Q4: 如何可视化结果？</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> qlib.contrib.report <span class="keyword">import</span> analysis_position</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成分析报告</span></span><br><span class="line">analysis_position(report_normal, positions_normal)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Microsoft Qlib是一个强大的AI量化投资平台，它的核心优势在于：</p>
+<ol>
+<li><strong>完整的ML Pipeline</strong>：从数据处理到模型训练到回测分析</li>
+<li><strong>丰富的内置资源</strong>：Alpha158因子库、多种ML模型</li>
+<li><strong>灵活的架构设计</strong>：模块化、可扩展、配置驱动</li>
+<li><strong>活跃的社区支持</strong>：微软持续维护更新</li>
+</ol>
+<p>对于技术开发者来说，Qlib是进入量化投资领域的绝佳选择。它让你专注于策略研究本身，而不是被数据、特征、回测等基础设施所困扰。</p>
+<p><strong>下一步建议</strong>：</p>
+<ol>
+<li>安装Qlib，运行官方Quick Start</li>
+<li>理解Alpha158因子库的构成</li>
+<li>尝试不同的模型，比较效果</li>
+<li>开发自定义策略，进行回测验证</li>
+<li>结合实盘需求，选择合适的框架组合</li>
+</ol>
+<hr>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/microsoft/qlib">Qlib GitHub仓库</a></li>
+<li><a target="_blank" rel="noopener" href="https://qlib.readthedocs.io/">Qlib官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2009.11189">Qlib论文：Qlib: An AI-oriented Quantitative Investment Platform</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.msra.cn/">微软亚洲研究院量化研究介绍</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lonelyrookie.github.io">Abel Huang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lonelyrookie.github.io/posts/882026544/">https://lonelyrookie.github.io/posts/882026544/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lonelyrookie.github.io" target="_blank">我的博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E9%87%8F%E5%8C%96%E9%87%91%E8%9E%8D/">量化金融</a><a class="post-meta__tags" href="/tags/Python/">Python</a><a class="post-meta__tags" href="/tags/Qlib/">Qlib</a></div><div class="post-share"><div class="social-share" data-image="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/1449386854/" title="Qlib从零构建量化策略：手把手实战教程"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Qlib从零构建量化策略：手把手实战教程</div></div><div class="info-2"><div class="info-item-1">写在前面上一篇我们介绍了Qlib的整体架构和核心概念。这篇教程，我们将动手实践，从零开始构建一个完整的量化策略。 你将学到：  ✅ 搭建Qlib开发环境 ✅ 获取和准备股票数据 ✅ 构建预测模型（LightGBM） ✅ 设计交易策略 ✅ 执行回测并分析结果 ✅ 优化策略参数  最终目标：构建一个能够预测沪深300成分股收益率的量化策略，并通过回测验证其有效性。  第一部分：环境搭建1.1 创建虚拟环境12345678# 使用conda创建Python环境conda create -n qlib python=3.10conda activate qlib# 或使用venvpython -m venv qlib_envsource qlib_env/bin/activate  # Linux/Mac# qlib_env\Scripts\activate   # Windows  1.2 安装Qlib1234567# 方式1：通过pip安装（推荐）pip install pyqlib# 方式2：从源码安装（获取最新功能）git clone https://github.com/mic...</div></div></div></a><a class="pagination-related" href="/posts/1627271544/" title="mattpocock-skills入门指南：让AI编码助手真正靠谱的技能集"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">mattpocock-skills入门指南：让AI编码助手真正靠谱的技能集</div></div><div class="info-2"><div class="info-item-1">简介mattpocock&#x2F;skills 是由 TypeScript 领域知名专家 Matt Pocock 创建的一套 AI 编码助手技能集合，旨在解决 AI 代理在日常开发中的常见失败模式。  一句话总结：这套技能让你的 AI 编码助手从”能跑就行”变成”真正靠谱”。  项目数据：⭐ 50K+ GitHub Stars | MIT 开源 | Shell 脚本 为什么需要这套技能？AI 编码助手（Claude Code、Codex、Cursor 等）很强大，但经常会遇到这些问题：    问题 表现    代理没按预期执行 你说东，它往西，最后发现是需求理解偏差   代理过于冗长 简单的事说半天，token 烧得心疼   代码无法工作 写完一跑就挂，缺乏测试反馈   代码变成泥球 功能有了，但架构一团糟，难以维护   这套技能正是为解决这些问题而生。 与其他方法的区别   方法 特点 限制    GSD &#x2F; BMAD &#x2F; Spec-Kit 拥有整个流程 剥夺控制权，流程 bug 难解决   Skills For Real Engineers 小型、易适应...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/1449386854/" title="Qlib从零构建量化策略：手把手实战教程"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-05</div><div class="info-item-2">Qlib从零构建量化策略：手把手实战教程</div></div><div class="info-2"><div class="info-item-1">写在前面上一篇我们介绍了Qlib的整体架构和核心概念。这篇教程，我们将动手实践，从零开始构建一个完整的量化策略。 你将学到：  ✅ 搭建Qlib开发环境 ✅ 获取和准备股票数据 ✅ 构建预测模型（LightGBM） ✅ 设计交易策略 ✅ 执行回测并分析结果 ✅ 优化策略参数  最终目标：构建一个能够预测沪深300成分股收益率的量化策略，并通过回测验证其有效性。  第一部分：环境搭建1.1 创建虚拟环境12345678# 使用conda创建Python环境conda create -n qlib python=3.10conda activate qlib# 或使用venvpython -m venv qlib_envsource qlib_env/bin/activate  # Linux/Mac# qlib_env\Scripts\activate   # Windows  1.2 安装Qlib1234567# 方式1：通过pip安装（推荐）pip install pyqlib# 方式2：从源码安装（获取最新功能）git clone https://github.com/mic...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://avatars.githubusercontent.com/u/40121337?v=4" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Abel Huang</div><div class="author-info-description">热爱技术，热爱生活</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">37</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LonelyRookie"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/LonelyRookie" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:1782480783@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E6%8B%A9Qlib%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">前言：为什么选择Qlib？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81Qlib%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5"><span class="toc-number">2.</span> <span class="toc-text">一、Qlib架构设计理念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%EF%BC%9A%E5%9B%9B%E5%B1%82%E8%AE%BE%E8%AE%A1"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 整体架构：四层设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E6%A8%A1%E5%9D%97%E5%8C%96%E8%AE%BE%E8%AE%A1%E5%93%B2%E5%AD%A6"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 模块化设计哲学</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E9%85%8D%E7%BD%AE%E9%A9%B1%E5%8A%A8%E6%B5%81%E6%B0%B4%E7%BA%BF%EF%BC%88CDPE%EF%BC%89"><span class="toc-number">2.3.</span> <span class="toc-text">1.3 配置驱动流水线（CDPE）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="toc-number">3.</span> <span class="toc-text">二、数据处理流水线</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 数据存储设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%BF%AB%E9%80%9F%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%B0%E6%8D%AE"><span class="toc-number">3.2.</span> <span class="toc-text">2.2 快速初始化数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E6%95%B0%E6%8D%AEAPI%E8%AF%A6%E8%A7%A3"><span class="toc-number">3.3.</span> <span class="toc-text">2.3 数据API详解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E5%99%A8%E4%B8%8E%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B"><span class="toc-number">3.4.</span> <span class="toc-text">2.4 数据处理器与特征工程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-%E6%95%B0%E6%8D%AE%E9%9B%86%E5%88%92%E5%88%86"><span class="toc-number">3.5.</span> <span class="toc-text">2.5 数据集划分</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E4%B8%8E%E9%A2%84%E6%B5%8B"><span class="toc-number">4.</span> <span class="toc-text">三、模型训练与预测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%86%85%E7%BD%AE%E6%A8%A1%E5%9E%8B%E5%BA%93"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 内置模型库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-LightGBM%E6%A8%A1%E5%9E%8B%E5%AE%9E%E6%88%98"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 LightGBM模型实战</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%AE%9E%E9%AA%8C%E7%AE%A1%E7%90%86%E4%B8%8E%E8%AE%B0%E5%BD%95"><span class="toc-number">4.3.</span> <span class="toc-text">3.3 实验管理与记录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%A8%A1%E5%9E%8B%E5%BC%80%E5%8F%91"><span class="toc-number">4.4.</span> <span class="toc-text">3.4 自定义模型开发</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%9B%9E%E6%B5%8B%E7%B3%BB%E7%BB%9F%E8%AF%A6%E8%A7%A3"><span class="toc-number">5.</span> <span class="toc-text">四、回测系统详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%9B%9E%E6%B5%8B%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="toc-number">5.1.</span> <span class="toc-text">4.1 回测核心概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-TopkDropout%E7%AD%96%E7%95%A5"><span class="toc-number">5.2.</span> <span class="toc-text">4.2 TopkDropout策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E5%9B%9E%E6%B5%8B%E6%89%A7%E8%A1%8C%E5%99%A8%E9%85%8D%E7%BD%AE"><span class="toc-number">5.3.</span> <span class="toc-text">4.3 回测执行器配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E5%AE%8C%E6%95%B4%E5%9B%9E%E6%B5%8B%E7%A4%BA%E4%BE%8B"><span class="toc-number">5.4.</span> <span class="toc-text">4.4 完整回测示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-%E5%9B%9E%E6%B5%8B%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90"><span class="toc-number">5.5.</span> <span class="toc-text">4.5 回测结果分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E5%AE%8C%E6%95%B4%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%AE%9E%E6%88%98"><span class="toc-number">6.</span> <span class="toc-text">五、完整工作流实战</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E4%B8%80%E9%94%AE%E8%BF%90%E8%A1%8C%EF%BC%9Aqrun"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 一键运行：qrun</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="toc-number">6.2.</span> <span class="toc-text">5.2 完整代码示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E4%B8%8E%E5%85%B6%E4%BB%96%E9%87%8F%E5%8C%96%E6%A1%86%E6%9E%B6%E5%AF%B9%E6%AF%94"><span class="toc-number">7.</span> <span class="toc-text">六、与其他量化框架对比</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E4%B8%BB%E6%B5%81%E9%87%8F%E5%8C%96%E6%A1%86%E6%9E%B6%E6%A6%82%E8%A7%88"><span class="toc-number">7.1.</span> <span class="toc-text">6.1 主流量化框架概览</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E8%AF%A6%E7%BB%86%E5%AF%B9%E6%AF%94%E5%88%86%E6%9E%90"><span class="toc-number">7.2.</span> <span class="toc-text">6.2 详细对比分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Qlib-vs-Backtrader"><span class="toc-number">7.2.1.</span> <span class="toc-text">Qlib vs Backtrader</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Qlib-vs-VnPy"><span class="toc-number">7.2.2.</span> <span class="toc-text">Qlib vs VnPy</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Qlib-vs-Zipline"><span class="toc-number">7.2.3.</span> <span class="toc-text">Qlib vs Zipline</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E9%80%89%E6%8B%A9%E5%BB%BA%E8%AE%AE"><span class="toc-number">7.3.</span> <span class="toc-text">6.3 选择建议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-%E7%BB%84%E5%90%88%E4%BD%BF%E7%94%A8%E7%AD%96%E7%95%A5"><span class="toc-number">7.4.</span> <span class="toc-text">6.4 组合使用策略</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E8%BF%9B%E9%98%B6%E4%B8%BB%E9%A2%98"><span class="toc-number">8.</span> <span class="toc-text">七、进阶主题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9D%97"><span class="toc-number">8.1.</span> <span class="toc-text">7.1 强化学习模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E8%B6%85%E5%8F%82%E6%95%B0%E8%B0%83%E4%BC%98"><span class="toc-number">8.2.</span> <span class="toc-text">7.2 超参数调优</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E6%A8%A1%E5%9E%8B%E9%9B%86%E6%88%90"><span class="toc-number">8.3.</span> <span class="toc-text">7.3 模型集成</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">9.</span> <span class="toc-text">八、常见问题与解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Q1-%E6%95%B0%E6%8D%AE%E4%BB%8E%E5%93%AA%E9%87%8C%E8%8E%B7%E5%8F%96%EF%BC%9F"><span class="toc-number">9.1.</span> <span class="toc-text">Q1: 数据从哪里获取？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Q2-%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9B%A0%E5%AD%90%EF%BC%9F"><span class="toc-number">9.2.</span> <span class="toc-text">Q2: 如何添加自定义因子？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Q3-%E5%9B%9E%E6%B5%8B%E9%80%9F%E5%BA%A6%E6%85%A2%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="toc-number">9.3.</span> <span class="toc-text">Q3: 回测速度慢怎么办？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Q4-%E5%A6%82%E4%BD%95%E5%8F%AF%E8%A7%86%E5%8C%96%E7%BB%93%E6%9E%9C%EF%BC%9F"><span class="toc-number">9.4.</span> <span class="toc-text">Q4: 如何可视化结果？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">11.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/1449386854/" title="Qlib从零构建量化策略：手把手实战教程"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Qlib从零构建量化策略：手把手实战教程"/></a><div class="content"><a class="title" href="/posts/1449386854/" title="Qlib从零构建量化策略：手把手实战教程">Qlib从零构建量化策略：手把手实战教程</a><time datetime="2026-05-04T16:42:45.000Z" title="发表于 2026-05-05 00:42:45">2026-05-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/882026544/" title="Microsoft Qlib：量化投资AI框架实战教程"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Microsoft Qlib：量化投资AI框架实战教程"/></a><div class="content"><a class="title" href="/posts/882026544/" title="Microsoft Qlib：量化投资AI框架实战教程">Microsoft Qlib：量化投资AI框架实战教程</a><time datetime="2026-05-04T16:23:55.000Z" title="发表于 2026-05-05 00:23:55">2026-05-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/1627271544/" title="mattpocock-skills入门指南：让AI编码助手真正靠谱的技能集"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="mattpocock-skills入门指南：让AI编码助手真正靠谱的技能集"/></a><div class="content"><a class="title" href="/posts/1627271544/" title="mattpocock-skills入门指南：让AI编码助手真正靠谱的技能集">mattpocock-skills入门指南：让AI编码助手真正靠谱的技能集</a><time datetime="2026-05-01T06:08:48.000Z" title="发表于 2026-05-01 14:08:48">2026-05-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/3882017412/" title="Harness Engineering深度解析：AI时代的第三工程支柱"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Harness Engineering深度解析：AI时代的第三工程支柱"/></a><div class="content"><a class="title" href="/posts/3882017412/" title="Harness Engineering深度解析：AI时代的第三工程支柱">Harness Engineering深度解析：AI时代的第三工程支柱</a><time datetime="2026-04-30T16:15:00.000Z" title="发表于 2026-05-01 00:15:00">2026-05-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/4093902447/" title="OpenSpec入门指南：轻量级规格驱动开发框架"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OpenSpec入门指南：轻量级规格驱动开发框架"/></a><div class="content"><a class="title" href="/posts/4093902447/" title="OpenSpec入门指南：轻量级规格驱动开发框架">OpenSpec入门指南：轻量级规格驱动开发框架</a><time datetime="2026-04-26T16:30:00.000Z" title="发表于 2026-04-27 00:30:00">2026-04-27</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Abel Huang</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://github.com/LonelyRookie" target="_blank">Follow me on GitHub</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? '' : ''
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>
