@@ -1,0 +1,1024 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Python打包完全指南：从pyproject.toml到发布PyPI | 我的博客</title><meta name="author" content="Abel Huang"><meta name="copyright" content="Abel Huang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一篇全面的Python打包实战指南，从pyproject.toml配置、构建后端选择(setuptools&#x2F;hatchling&#x2F;flit&#x2F;PDM&#x2F;Poetry)、到发布PyPI和版本管理，帮助开发者掌握现代标准化的Python打包流程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python打包完全指南：从pyproject.toml到发布PyPI">
+<meta property="og:url" content="https://lonelyrookie.github.io/posts/662026244/index.html">
+<meta property="og:site_name" content="我的博客">
+<meta property="og:description" content="一篇全面的Python打包实战指南，从pyproject.toml配置、构建后端选择(setuptools&#x2F;hatchling&#x2F;flit&#x2F;PDM&#x2F;Poetry)、到发布PyPI和版本管理，帮助开发者掌握现代标准化的Python打包流程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800">
+<meta property="article:published_time" content="2026-05-24T08:06:01.000Z">
+<meta property="article:modified_time" content="2026-05-24T16:04:26.314Z">
+<meta property="article:author" content="Abel Huang">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="pyproject.toml">
+<meta property="article:tag" content="打包">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Python打包完全指南：从pyproject.toml到发布PyPI",
+  "url": "https://lonelyrookie.github.io/posts/662026244/",
+  "image": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800",
+  "datePublished": "2026-05-24T08:06:01.000Z",
+  "dateModified": "2026-05-24T16:04:26.314Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Abel Huang",
+      "url": "https://lonelyrookie.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/40121337?v=4"><link rel="canonical" href="https://lonelyrookie.github.io/posts/662026244/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.4"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Python打包完全指南：从pyproject.toml到发布PyPI',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      if ($loadingBox.classList.contains('loaded')) return
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+
+  if (document.readyState === 'complete') {
+    preloader.endLoading()
+  } else {
+    window.addEventListener('load', preloader.endLoading)
+    document.addEventListener('DOMContentLoaded', preloader.endLoading)
+    // Add timeout protection: force end after 7 seconds
+    setTimeout(preloader.endLoading, 7000)
+  }
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div class="bg-animation" id="web_bg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://avatars.githubusercontent.com/u/40121337?v=4" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">40</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的博客</span></a><a class="nav-page-title" href="/"><span class="site-name">Python打包完全指南：从pyproject.toml到发布PyPI</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Python打包完全指南：从pyproject.toml到发布PyPI</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-24T08:06:01.000Z" title="发表于 2026-05-24 16:06:01">2026-05-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-24T16:04:26.314Z" title="更新于 2026-05-25 00:04:26">2026-05-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Python/">Python</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="前言：为什么需要现代化Python打包？"><a href="#前言：为什么需要现代化Python打包？" class="headerlink" title="前言：为什么需要现代化Python打包？"></a>前言：为什么需要现代化Python打包？</h2><p>如果你写过Python项目，你一定遇到过这些问题：</p>
+<ul>
+<li><code>setup.py</code> &#x2F; <code>setup.cfg</code> &#x2F; <code>requirements.txt</code> &#x2F; <code>MANIFEST.in</code> 蔚为壮观，到底用哪个？</li>
+<li>依赖管理器混战：pip、pip-tools、Poetry、Pipenv各不相同</li>
+<li>想发布到PyPI，但不知道该怎么开始</li>
+<li>换电脑后项目不能一键安装，环境搭建痛苦不堪</li>
+<li>项目维护者要维护好几个配置文件，头大如斗</li>
+</ul>
+<p>这些问题的根源是：<strong>Python打包生态系统长期碎片化</strong>。2018年，Python社区通过 <a target="_blank" rel="noopener" href="https://peps.python.org/pep-0517/">PEP 517</a> 和 <a target="_blank" rel="noopener" href="https://peps.python.org/pep-0518/">PEP 518</a> 开启了现代化改革，随后 <a target="_blank" rel="noopener" href="https://peps.python.org/pep-0621/">PEP 621</a> 正式将 <code>pyproject.toml</code> 确立为<strong>唯一、统一的项目元数据文件</strong>，从此告别了多文件混战的时代。</p>
+<blockquote>
+<p>📋 <strong>核心变化</strong>: 从 <code>setup.py</code> + <code>setup.cfg</code> + <code>requirements.txt</code> → <strong><code>pyproject.toml</code> 一文档统治</strong></p>
+</blockquote>
+<p>本文基于 <a target="_blank" rel="noopener" href="https://packaging.python.org/en/latest/guides/">Python Packaging Authority (PyPA) 官方指南</a>，将带你从零开始，完成从项目配置、构建后端选择、到发布PyPI的全流程。</p>
+<hr>
+<h2 id="一、一句话理解：setup-py-为什么被-pyproject-toml-取代？"><a href="#一、一句话理解：setup-py-为什么被-pyproject-toml-取代？" class="headerlink" title="一、一句话理解：setup.py 为什么被 pyproject.toml 取代？"></a>一、一句话理解：setup.py 为什么被 pyproject.toml 取代？</h2><p>假设你的项目是一部汽车：</p>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>旧世界</th>
+<th>新世界</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>厂商说明书</td>
+<td><code>setup.py</code> &#x2F; <code>setup.cfg</code> 多份文件</td>
+<td><code>pyproject.toml</code> 唯一文档</td>
+</tr>
+<tr>
+<td>发动机</td>
+<td>必须指定 setuptools</td>
+<td>自选构建后端(hatchling&#x2F;flit&#x2F;PDM&#x2F;Poetry)</td>
+</tr>
+<tr>
+<td>装配清单</td>
+<td><code>requirements.txt</code> &#x2F; <code>Pipfile</code></td>
+<td><code>[project.dependencies]</code></td>
+</tr>
+<tr>
+<td>质检单</td>
+<td>无</td>
+<td>内置 <code>[project.scripts]</code> 或者插件入口</td>
+</tr>
+<tr>
+<td>安全帶</td>
+<td>必须手动检查</td>
+<td><code>[build-system]</code> 明确声明</td>
+</tr>
+</tbody></table>
+<p><code>pyproject.toml</code> 不是简单格式变更，而是 <strong>架构性改进</strong>：从”工具锁定”到”厂商中立”。</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 时代的眼泪：旧 setup.py</span></span><br><span class="line"><span class="comment"># from setuptools import setup</span></span><br><span class="line"><span class="comment"># setup(</span></span><br><span class="line"><span class="comment">#     name=&quot;my-project&quot;,</span></span><br><span class="line"><span class="comment">#     version=&quot;0.1.0&quot;,  # 硬编码版本</span></span><br><span class="line"><span class="comment">#     install_requires=[&quot;requests&gt;=2.28&quot;],</span></span><br><span class="line"><span class="comment">#     entry_points=&#123;&quot;console_scripts&quot;: [&quot;mycli=my_project.cli:main&quot;]&#125;,</span></span><br><span class="line"><span class="comment"># )</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 新世界：pyproject.toml</span></span><br><span class="line"><span class="section">[project]</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;my-project&quot;</span></span><br><span class="line"><span class="attr">version</span> = <span class="string">&quot;0.1.0&quot;</span></span><br><span class="line"><span class="attr">requires-python</span> = <span class="string">&quot;&gt;=3.10&quot;</span></span><br><span class="line"><span class="attr">dependencies</span> = [<span class="string">&quot;requests&gt;=2.28&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="section">[project.scripts]</span></span><br><span class="line"><span class="attr">mycli</span> = <span class="string">&quot;my_project.cli:main&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[build-system]</span></span><br><span class="line"><span class="attr">requires</span> = [<span class="string">&quot;hatchling&quot;</span>]</span><br><span class="line"><span class="attr">build-backend</span> = <span class="string">&quot;hatchling.build&quot;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>💡 <strong>提示</strong>: 如果你还在用 <code>setup.py</code>，现在就是迁移的最佳时机。Python 3.12+ 甚至开始发布 DeprecationWarning。</p>
+</blockquote>
+<hr>
+<h2 id="二、核心价值：从”能跑”到”好用”"><a href="#二、核心价值：从”能跑”到”好用”" class="headerlink" title="二、核心价值：从”能跑”到”好用”"></a>二、核心价值：从”能跑”到”好用”</h2><p><code>pyproject.toml</code> 解决的不只是”打包”问题，而是面向<strong>开发者</strong>、<strong>发布者</strong>、<strong>用户</strong>三方面的体验问题：</p>
+<h3 id="2-1-面向开发者：一个文件搞定所有"><a href="#2-1-面向开发者：一个文件搞定所有" class="headerlink" title="2.1 面向开发者：一个文件搞定所有"></a>2.1 面向开发者：一个文件搞定所有</h3><p><code>pyproject.toml</code> 统一管理：</p>
+<ul>
+<li>项目元数据(名称、版本、作者、描述)</li>
+<li>依赖声明(runtime + build + dev + optional)</li>
+<li>构建系统配置(后端、前置命令、插件)</li>
+<li>工具配置(linter、test、type checker、tools一站式)</li>
+</ul>
+<h3 id="2-2-面向发布者：标准化流程"><a href="#2-2-面向发布者：标准化流程" class="headerlink" title="2.2 面向发布者：标准化流程"></a>2.2 面向发布者：标准化流程</h3><ul>
+<li>不再需要执行 <code>setup.py</code>，避免任意代码执行风险</li>
+<li><code>python -m build</code> 统一构建入口，支持多种构建后端</li>
+<li><code>twine upload</code> 一键发布到PyPI</li>
+</ul>
+<h3 id="2-3-面向用户：开箱即用"><a href="#2-3-面向用户：开箱即用" class="headerlink" title="2.3 面向用户：开箱即用"></a>2.3 面向用户：开箱即用</h3><p><code>pip install</code> 无需先解读 <code>setup.py</code>，也不需要安装构建依赖（如setuptools）。用户只需要Python和pip，其余全部自动处理。</p>
+<blockquote>
+<p>📋 <strong>说明</strong>: 如果你的项目仅仅是一个脚本，不需要发布，可能一个 <code>requirements.txt</code> 就够用了。但只要你计划分享项目或发布包，<code>pyproject.toml</code> 就是最佳的起点。</p>
+</blockquote>
+<hr>
+<h2 id="三、快速开始：5分钟创建你的第一个包"><a href="#三、快速开始：5分钟创建你的第一个包" class="headerlink" title="三、快速开始：5分钟创建你的第一个包"></a>三、快速开始：5分钟创建你的第一个包</h2><h3 id="3-1-项目初始化"><a href="#3-1-项目初始化" class="headerlink" title="3.1 项目初始化"></a>3.1 项目初始化</h3><p>我们从零开始创建一个完整的项目。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建项目目录</span></span><br><span class="line"><span class="built_in">mkdir</span> my-awesome-tool &amp;&amp; <span class="built_in">cd</span> my-awesome-tool</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建虚拟环境</span></span><br><span class="line">python -m venv .venv</span><br><span class="line"><span class="built_in">source</span> .venv/bin/activate  <span class="comment"># Windows: .venv\Scripts\activate</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建源代码目录</span></span><br><span class="line"><span class="built_in">mkdir</span> -p src/my_awesome_tool</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-核心源代码"><a href="#3-2-核心源代码" class="headerlink" title="3.2 核心源代码"></a>3.2 核心源代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># src/my_awesome_tool/__init__.py</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">my_awesome_tool - A demonstration package for modern Python packaging.</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">__version__ = <span class="string">&quot;0.1.0&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># src/my_awesome_tool/core.py</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">greet</span>(<span class="params">name: <span class="built_in">str</span> = <span class="string">&quot;World&quot;</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Say hello to someone.&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&quot;Hello, <span class="subst">&#123;name&#125;</span>! 👋&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># src/my_awesome_tool/cli.py</span></span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">from</span> .core <span class="keyword">import</span> greet</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    parser = argparse.ArgumentParser(description=<span class="string">&quot;My Awesome Tool&quot;</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&quot;--name&quot;</span>, default=<span class="string">&quot;World&quot;</span>, <span class="built_in">help</span>=<span class="string">&quot;Who to greet&quot;</span>)</span><br><span class="line">    args = parser.parse_args()</span><br><span class="line">    <span class="built_in">print</span>(greet(args.name))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-写下-pyproject-toml"><a href="#3-3-写下-pyproject-toml" class="headerlink" title="3.3 写下 pyproject.toml"></a>3.3 写下 <code>pyproject.toml</code></h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[build-system]</span></span><br><span class="line"><span class="attr">requires</span> = [<span class="string">&quot;hatchling&quot;</span>]</span><br><span class="line"><span class="attr">build-backend</span> = <span class="string">&quot;hatchling.build&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[project]</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;my-awesome-tool&quot;</span></span><br><span class="line"><span class="attr">version</span> = <span class="string">&quot;0.1.0&quot;</span></span><br><span class="line"><span class="attr">description</span> = <span class="string">&quot;A demonstration package for modern Python packaging.&quot;</span></span><br><span class="line"><span class="attr">readme</span> = <span class="string">&quot;README.md&quot;</span></span><br><span class="line"><span class="attr">license</span> = &#123;text = <span class="string">&quot;MIT&quot;</span>&#125;</span><br><span class="line"><span class="attr">requires-python</span> = <span class="string">&quot;&gt;=3.10&quot;</span></span><br><span class="line"><span class="attr">authors</span> = [&#123;name = <span class="string">&quot;Your Name&quot;</span>, email = <span class="string">&quot;you@example.com&quot;</span>&#125;]</span><br><span class="line"><span class="attr">keywords</span> = [<span class="string">&quot;demo&quot;</span>, <span class="string">&quot;packaging&quot;</span>]</span><br><span class="line"><span class="attr">classifiers</span> = [</span><br><span class="line">    <span class="string">&quot;Development Status :: 3 - Alpha&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Programming Language :: Python :: 3&quot;</span>,</span><br><span class="line">    <span class="string">&quot;License :: OSI Approved :: MIT License&quot;</span>,</span><br><span class="line">]</span><br><span class="line"><span class="attr">dependencies</span> = [</span><br><span class="line">    <span class="string">&quot;rich&gt;=13.0&quot;</span>,  <span class="comment"># 为了漂亮的终端输出</span></span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="section">[project.optional-dependencies]</span></span><br><span class="line"><span class="attr">dev</span> = [<span class="string">&quot;pytest&gt;=7.0&quot;</span>, <span class="string">&quot;ruff&gt;=0.8&quot;</span>, <span class="string">&quot;mypy&gt;=1.14&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="section">[project.scripts]</span></span><br><span class="line"><span class="attr">mycli</span> = <span class="string">&quot;my_awesome_tool.cli:main&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[tool.hatch.build.targets.wheel]</span></span><br><span class="line"><span class="attr">packages</span> = [<span class="string">&quot;src/my_awesome_tool&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="section">[tool.ruff]</span></span><br><span class="line"><span class="attr">line-length</span> = <span class="number">100</span></span><br><span class="line"><span class="attr">target-version</span> = <span class="string">&quot;py310&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[tool.mypy]</span></span><br><span class="line"><span class="attr">python_version</span> = <span class="string">&quot;3.10&quot;</span></span><br><span class="line"><span class="attr">strict</span> = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="section">[tool.pytest.ini_options]</span></span><br><span class="line"><span class="attr">testpaths</span> = [<span class="string">&quot;tests&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-4-构建、安装与测试"><a href="#3-4-构建、安装与测试" class="headerlink" title="3.4 构建、安装与测试"></a>3.4 构建、安装与测试</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装构建工具</span></span><br><span class="line">pip install build</span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建包</span></span><br><span class="line">python -m build</span><br><span class="line"><span class="comment"># 输出: dist/my_awesome_tool-0.1.0-py3-none-any.whl</span></span><br><span class="line"><span class="comment">#         dist/my_awesome_tool-0.1.0.tar.gz</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装测试</span></span><br><span class="line">pip install dist/my_awesome_tool-0.1.0-py3-none-any.whl</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试命令行工具</span></span><br><span class="line">mycli --name Codex</span><br><span class="line"><span class="comment"># 输出: Hello, Codex! 👋</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>⚠️ <strong>注意</strong>: 始终在<strong>虚拟环境</strong>中测试，避免污染全局Python环境。</p>
+</blockquote>
+<hr>
+<h2 id="四、pyproject-toml-详解"><a href="#四、pyproject-toml-详解" class="headerlink" title="四、pyproject.toml 详解"></a>四、pyproject.toml 详解</h2><h3 id="4-1-build-system-—-构建系统声明"><a href="#4-1-build-system-—-构建系统声明" class="headerlink" title="4.1 [build-system] — 构建系统声明"></a>4.1 [build-system] — 构建系统声明</h3><p>这是整个文件的引擎声明。告诉pip你需要什么工具来构建项目：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[build-system]</span></span><br><span class="line"><span class="attr">requires</span> = [<span class="string">&quot;hatchling&quot;</span>]             <span class="comment"># 构建依赖</span></span><br><span class="line"><span class="attr">build-backend</span> = <span class="string">&quot;hatchling.build&quot;</span>    <span class="comment"># 构建后端入口</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>必须</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>requires</code></td>
+<td>是</td>
+<td>构建工具的PyPI依赖列表</td>
+</tr>
+<tr>
+<td><code>build-backend</code></td>
+<td>是</td>
+<td>后端入口字符串（<code>module:object</code>格式）</td>
+</tr>
+<tr>
+<td><code>backend-path</code></td>
+<td>否</td>
+<td>如果后端在项目内部</td>
+</tr>
+</tbody></table>
+<p><strong>常见构建后端配置</strong>：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># hatchling（推荐）</span></span><br><span class="line"><span class="section">[build-system]</span></span><br><span class="line"><span class="attr">requires</span> = [<span class="string">&quot;hatchling&quot;</span>]</span><br><span class="line"><span class="attr">build-backend</span> = <span class="string">&quot;hatchling.build&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># setuptools（兼容性最强）</span></span><br><span class="line"><span class="section">[build-system]</span></span><br><span class="line"><span class="attr">requires</span> = [<span class="string">&quot;setuptools&gt;=77.0&quot;</span>, <span class="string">&quot;wheel&quot;</span>]</span><br><span class="line"><span class="attr">build-backend</span> = <span class="string">&quot;setuptools.build_meta&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># flit（最简单）</span></span><br><span class="line"><span class="section">[build-system]</span></span><br><span class="line"><span class="attr">requires</span> = [<span class="string">&quot;flit_core&gt;=3.12&quot;</span>]</span><br><span class="line"><span class="attr">build-backend</span> = <span class="string">&quot;flit_core.buildapi&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># PDM（PEP 621原生支持）</span></span><br><span class="line"><span class="section">[build-system]</span></span><br><span class="line"><span class="attr">requires</span> = [<span class="string">&quot;pdm-backend&quot;</span>]</span><br><span class="line"><span class="attr">build-backend</span> = <span class="string">&quot;pdm.backend&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-project-—-项目元数据"><a href="#4-2-project-—-项目元数据" class="headerlink" title="4.2 [project] — 项目元数据"></a>4.2 [project] — 项目元数据</h3><p>这是 <code>pyproject.toml</code> 的<strong>核心</strong>，遵循PEP 621规范。</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[project]</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;my-package&quot;</span>                 <span class="comment"># 必填：PyPI唯一标识</span></span><br><span class="line"><span class="attr">version</span> = <span class="string">&quot;1.0.0&quot;</span>                   <span class="comment"># 必填：遵循SemVer</span></span><br><span class="line"><span class="attr">description</span> = <span class="string">&quot;A short summary&quot;</span>     <span class="comment"># 必填：一句话描述</span></span><br><span class="line"><span class="attr">readme</span> = <span class="string">&quot;README.md&quot;</span>                <span class="comment"># 描述文件路径</span></span><br><span class="line"><span class="attr">license</span> = &#123;text = <span class="string">&quot;MIT&quot;</span>&#125;            <span class="comment"># 许可证声明</span></span><br><span class="line"><span class="attr">requires-python</span> = <span class="string">&quot;&gt;=3.10&quot;</span>          <span class="comment"># Python版本约束</span></span><br><span class="line"><span class="attr">authors</span> = [</span><br><span class="line">    &#123;name = <span class="string">&quot;Author Name&quot;</span>, email = <span class="string">&quot;author@example.com&quot;</span>&#125;,</span><br><span class="line">]</span><br><span class="line"><span class="attr">maintainers</span> = [</span><br><span class="line">    &#123;name = <span class="string">&quot;Maintainer Name&quot;</span>, email = <span class="string">&quot;maint@example.com&quot;</span>&#125;,</span><br><span class="line">]</span><br><span class="line"><span class="attr">keywords</span> = [<span class="string">&quot;keyword1&quot;</span>, <span class="string">&quot;keyword2&quot;</span>]</span><br><span class="line"><span class="attr">classifiers</span> = [</span><br><span class="line">    <span class="string">&quot;Programming Language :: Python :: 3&quot;</span>,</span><br><span class="line">    <span class="string">&quot;License :: OSI Approved :: MIT License&quot;</span>,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># core dependencies</span></span><br><span class="line"><span class="attr">dependencies</span> = [</span><br><span class="line">    <span class="string">&quot;requests&gt;=2.28,&lt;3.0&quot;</span>,</span><br><span class="line">    <span class="string">&quot;click&gt;=8.1&quot;</span>,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># extra features</span></span><br><span class="line"><span class="section">[project.optional-dependencies]</span></span><br><span class="line"><span class="attr">all</span> = [<span class="string">&quot;mypackage[cli,dev]&quot;</span>]</span><br><span class="line"><span class="attr">cli</span> = [<span class="string">&quot;rich&gt;=13.0&quot;</span>, <span class="string">&quot;typer&gt;=0.15&quot;</span>]</span><br><span class="line"><span class="attr">dev</span> = [<span class="string">&quot;pytest&gt;=8.0&quot;</span>, <span class="string">&quot;ruff&gt;=0.8&quot;</span>, <span class="string">&quot;mypy&gt;=1.14&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># entry points</span></span><br><span class="line"><span class="section">[project.scripts]</span></span><br><span class="line"><span class="attr">mycli</span> = <span class="string">&quot;my_package.cli:main&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[project.gui-scripts]</span></span><br><span class="line"><span class="attr">mygui</span> = <span class="string">&quot;my_package.gui:main&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># dynamic fields (if not declared in [project], must be in dynamic)</span></span><br><span class="line"><span class="attr">dynamic</span> = [<span class="string">&quot;version&quot;</span>]  <span class="comment"># 允许构建时动态生成</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># URLs for PyPI page</span></span><br><span class="line"><span class="section">[project.urls]</span></span><br><span class="line"><span class="attr">Homepage</span> = <span class="string">&quot;https://github.com/user/my-package&quot;</span></span><br><span class="line"><span class="attr">Documentation</span> = <span class="string">&quot;https://my-package.readthedocs.io&quot;</span></span><br><span class="line"><span class="attr">Repository</span> = <span class="string">&quot;https://github.com/user/my-package.git&quot;</span></span><br><span class="line"><span class="attr">Issues</span> = <span class="string">&quot;https://github.com/user/my-package/issues&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong><code>dynamic</code> 字段的含义</strong>：</p>
+<p>如果你不想在 <code>pyproject.toml</code> 中硬编码版本号，可以声明为动态：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[project]</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;my-package&quot;</span></span><br><span class="line"><span class="attr">dynamic</span> = [<span class="string">&quot;version&quot;</span>, <span class="string">&quot;readme&quot;</span>]  <span class="comment"># 由构建后端动态生成</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># hatchling 从文件读取版本</span></span><br><span class="line"><span class="section">[tool.hatch.version]</span></span><br><span class="line"><span class="attr">path</span> = <span class="string">&quot;src/my_package/__init__.py&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># setuptools-scm 从 git tag 自动生成版本</span></span><br><span class="line"><span class="section">[tool.setuptools_scm]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-tool-—-工具配置命名空间"><a href="#4-3-tool-—-工具配置命名空间" class="headerlink" title="4.3 [tool] — 工具配置命名空间"></a>4.3 [tool] — 工具配置命名空间</h3><p>所有第三方工具的配置都应该放在 <code>[tool.xxx]</code> 下，这是约定俗成的规范：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Ruff linter</span></span><br><span class="line"><span class="section">[tool.ruff]</span></span><br><span class="line"><span class="attr">line-length</span> = <span class="number">100</span></span><br><span class="line"><span class="attr">target-version</span> = <span class="string">&quot;py310&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[tool.ruff.lint]</span></span><br><span class="line"><span class="attr">select</span> = [<span class="string">&quot;E&quot;</span>, <span class="string">&quot;F&quot;</span>, <span class="string">&quot;I&quot;</span>, <span class="string">&quot;N&quot;</span>, <span class="string">&quot;W&quot;</span>, <span class="string">&quot;UP&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># mypy type checker</span></span><br><span class="line"><span class="section">[tool.mypy]</span></span><br><span class="line"><span class="attr">python_version</span> = <span class="string">&quot;3.10&quot;</span></span><br><span class="line"><span class="attr">strict</span> = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># pytest</span></span><br><span class="line"><span class="section">[tool.pytest.ini_options]</span></span><br><span class="line"><span class="attr">minversion</span> = <span class="string">&quot;7.0&quot;</span></span><br><span class="line"><span class="attr">testpaths</span> = [<span class="string">&quot;tests&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># coverage</span></span><br><span class="line"><span class="section">[tool.coverage.run]</span></span><br><span class="line"><span class="attr">branch</span> = <span class="literal">true</span></span><br><span class="line"><span class="attr">source</span> = [<span class="string">&quot;my_package&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># Black formatter</span></span><br><span class="line"><span class="section">[tool.black]</span></span><br><span class="line"><span class="attr">line-length</span> = <span class="number">100</span></span><br><span class="line"><span class="attr">target-version</span> = [<span class="string">&quot;py310&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>💡 <strong>提示</strong>: 把 <code>.flake8</code>、<code>mypy.ini</code>、<code>pytest.ini</code>、<code>.coveragerc</code>等配置全部迁移到 <code>pyproject.toml</code> 中，一个文件统治所有工具配置。</p>
+</blockquote>
+<hr>
+<h2 id="五、构建后端对比：谁适合你？"><a href="#五、构建后端对比：谁适合你？" class="headerlink" title="五、构建后端对比：谁适合你？"></a>五、构建后端对比：谁适合你？</h2><p>现代Python构建后端的职责很简单：把 <code>pyproject.toml</code> 转化为Sdist (<code>.tar.gz</code>) 和Wheel (<code>.whl</code>)。但是，背后的工作量却差异巨大。</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>hatchling</th>
+<th>setuptools</th>
+<th>flit</th>
+<th>PDM</th>
+<th>Poetry</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>PEP 621</td>
+<td>✅ 原生</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>⚠️ 自定义</td>
+</tr>
+<tr>
+<td>构建速度</td>
+<td>✅ 很快</td>
+<td>⚠️ 慢</td>
+<td>✅ 最快</td>
+<td>✅ 快</td>
+<td>⚠️ 慢</td>
+</tr>
+<tr>
+<td>C扩展</td>
+<td>✅</td>
+<td>✅ 最佳</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>插件</td>
+<td>✅</td>
+<td>✅</td>
+<td>⚠️ 少</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>版本管理</td>
+<td>✅</td>
+<td>✅ setuptools-scm</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>依赖解析</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>学习成本</td>
+<td>✅ 低</td>
+<td>⚠️ 中</td>
+<td>✅ 低</td>
+<td>⚠️ 中</td>
+<td>✅ 低</td>
+</tr>
+</tbody></table>
+<h3 id="5-1-实战建议"><a href="#5-1-实战建议" class="headerlink" title="5.1 实战建议"></a>5.1 实战建议</h3><blockquote>
+<p>🎨 <strong>默认推荐</strong>: <strong>hatchling</strong> — 速度快、PEP 621原生支持、活跃社区、插件生态丰富。</p>
+<p>🔧 <strong>需要C扩展</strong>: <strong>setuptools</strong> — 唯一对C扩展有完整支持的后端。</p>
+<p>⚡ <strong>最简单</strong>: <strong>flit</strong> — 仅需3行声明，适合纯Python包。</p>
+<p>📦 <strong>想PDM&#x2F;Poetry体验</strong>: <strong>PDM</strong> &#x2F; <strong>Poetry</strong> — 依赖管理+构建一体化，但PEP 621支持待完善。</p>
+</blockquote>
+<h3 id="5-2-hatchling-配置详解"><a href="#5-2-hatchling-配置详解" class="headerlink" title="5.2 hatchling 配置详解"></a>5.2 hatchling 配置详解</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[tool.hatch.version]</span></span><br><span class="line"><span class="attr">path</span> = <span class="string">&quot;src/my_package/__init__.py&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[tool.hatch.build.targets.wheel]</span></span><br><span class="line"><span class="attr">packages</span> = [<span class="string">&quot;src/my_package&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 排除特定文件</span></span><br><span class="line"><span class="section">[tool.hatch.build.targets.sdist]</span></span><br><span class="line"><span class="attr">exclude</span> = [<span class="string">&quot;tests/&quot;</span>, <span class="string">&quot;docs/&quot;</span>, <span class="string">&quot;.github/&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 只包含纯Python包</span></span><br><span class="line"><span class="section">[tool.hatch.build.targets.wheel]</span></span><br><span class="line"><span class="attr">only-packages</span> = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-3-setuptools-配置（兼容向）"><a href="#5-3-setuptools-配置（兼容向）" class="headerlink" title="5.3 setuptools 配置（兼容向）"></a>5.3 setuptools 配置（兼容向）</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[build-system]</span></span><br><span class="line"><span class="attr">requires</span> = [<span class="string">&quot;setuptools&gt;=77.0&quot;</span>, <span class="string">&quot;setuptools-scm&gt;=8.0&quot;</span>]</span><br><span class="line"><span class="attr">build-backend</span> = <span class="string">&quot;setuptools.build_meta&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[project]</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;my-c-extension&quot;</span></span><br><span class="line"><span class="attr">dynamic</span> = [<span class="string">&quot;version&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="section">[tool.setuptools]</span></span><br><span class="line"><span class="attr">packages</span> = [<span class="string">&quot;my_extension&quot;</span>]</span><br><span class="line"><span class="attr">package-dir</span> = &#123;<span class="string">&quot;&quot;</span> = <span class="string">&quot;src&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">[tool.setuptools_scm]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-4-Poetry-迁移示例"><a href="#5-4-Poetry-迁移示例" class="headerlink" title="5.4 Poetry 迁移示例"></a>5.4 Poetry 迁移示例</h3><p>如果你用Poetry，需要做一些转换：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Poetry 格式 → PEP 621 格式</span></span><br><span class="line"><span class="comment"># [tool.poetry.dependencies]</span></span><br><span class="line"><span class="comment"># python = &quot;^3.10&quot;</span></span><br><span class="line"><span class="comment"># requests = &quot;^2.28&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># → 转换为:</span></span><br><span class="line"><span class="section">[project]</span></span><br><span class="line"><span class="attr">requires-python</span> = <span class="string">&quot;&gt;=3.10&quot;</span></span><br><span class="line"><span class="attr">dependencies</span> = [<span class="string">&quot;requests&gt;=2.28&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、项目结构最佳实践"><a href="#六、项目结构最佳实践" class="headerlink" title="六、项目结构最佳实践"></a>六、项目结构最佳实践</h2><h3 id="6-1-src-layout-vs-flat-layout"><a href="#6-1-src-layout-vs-flat-layout" class="headerlink" title="6.1 src layout vs flat layout"></a>6.1 src layout vs flat layout</h3><p>Python项目主要有两种目录结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># src layout (推荐)</span><br><span class="line">my-project/</span><br><span class="line">├── pyproject.toml</span><br><span class="line">├── README.md</span><br><span class="line">├── LICENSE</span><br><span class="line">├── src/</span><br><span class="line">│   └── my_package/</span><br><span class="line">│       ├── __init__.py</span><br><span class="line">│       ├── core.py</span><br><span class="line">│       └── cli.py</span><br><span class="line">└── tests/</span><br><span class="line">    └── test_core.py</span><br><span class="line"></span><br><span class="line"># flat layout (简单项目可用)</span><br><span class="line">my-project/</span><br><span class="line">├── pyproject.toml</span><br><span class="line">├── README.md</span><br><span class="line">├── my_package/</span><br><span class="line">│   └── __init__.py</span><br><span class="line">└── tests/</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>对比维度</th>
+<th>src layout</th>
+<th>flat layout</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>安装测试</td>
+<td>强制测试构建后的包</td>
+<td>可能导入源代码同名包</td>
+</tr>
+<tr>
+<td>多包</td>
+<td>✅ 自然支持</td>
+<td>❌ 易混淆</td>
+</tr>
+<tr>
+<td>简单项目</td>
+<td>增加一层目录</td>
+<td>✅ 直观</td>
+</tr>
+<tr>
+<td>PyPA推荐</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+</tbody></table>
+<p><strong>建议</strong>: 新项目起手就用<strong>src layout</strong>，避免将来迁移的麻烦。</p>
+<h3 id="6-2-完整项目模板"><a href="#6-2-完整项目模板" class="headerlink" title="6.2 完整项目模板"></a>6.2 完整项目模板</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">my-project/</span><br><span class="line">├── pyproject.toml          <span class="comment"># 唯一配置文件</span></span><br><span class="line">├── README.md               <span class="comment"># 项目介绍</span></span><br><span class="line">├── LICENSE                 <span class="comment"># 许可证</span></span><br><span class="line">├── CHANGELOG.md            <span class="comment"># 变更日志</span></span><br><span class="line">├── .gitignore</span><br><span class="line">├── src/</span><br><span class="line">│   └── my_package/</span><br><span class="line">│       ├── __init__.py     <span class="comment"># 公开API + __version__</span></span><br><span class="line">│       ├── py.typed         <span class="comment"># PEP 561 标记文件</span></span><br><span class="line">│       ├── core.py</span><br><span class="line">│       ├── cli.py</span><br><span class="line">│       └── _internal/       <span class="comment"># 私有实现</span></span><br><span class="line">│           └── _helper.py</span><br><span class="line">├── tests/</span><br><span class="line">│   ├── __init__.py</span><br><span class="line">│   └── test_core.py</span><br><span class="line">└── docs/</span><br><span class="line">    └── index.md</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、发布到PyPI：让世界用上你的包"><a href="#七、发布到PyPI：让世界用上你的包" class="headerlink" title="七、发布到PyPI：让世界用上你的包"></a>七、发布到PyPI：让世界用上你的包</h2><h3 id="7-1-发布前检查清单"><a href="#7-1-发布前检查清单" class="headerlink" title="7.1 发布前检查清单"></a>7.1 发布前检查清单</h3><p>发布前确保以下准备就绪：</p>
+<ul>
+<li><input disabled="" type="checkbox"> <code>pyproject.toml</code> 中 <code>name</code> 在PyPI上唯一（先去 <a target="_blank" rel="noopener" href="https://pypi.org/">pypi.org</a> 查询）</li>
+<li><input disabled="" type="checkbox"> <code>version</code> 与已发布版本不冲突</li>
+<li><input disabled="" type="checkbox"> <code>python -m build</code> 编译无错误</li>
+<li><input disabled="" type="checkbox"> <code>twine check dist/*</code> 通过校验</li>
+<li><input disabled="" type="checkbox"> <code>README.md</code> 内容完整且格式正确</li>
+</ul>
+<h3 id="7-2-发布流程"><a href="#7-2-发布流程" class="headerlink" title="7.2 发布流程"></a>7.2 发布流程</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 安装构建和发布工具</span></span><br><span class="line">pip install build twine</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 清理旧包</span></span><br><span class="line"><span class="built_in">rm</span> -rf dist/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 构建</span></span><br><span class="line">python -m build</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 校验包</span></span><br><span class="line">twine check dist/*</span><br><span class="line"><span class="comment"># 合格输出: Checking dist/my_package-1.0.0-py3-none-any.whl: PASSED</span></span><br><span class="line"><span class="comment">#              Checking dist/my_package-1.0.0.tar.gz: PASSED</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 上传到TestPyPI（先测试）</span></span><br><span class="line">twine upload -r testpypi dist/*</span><br><span class="line"></span><br><span class="line"><span class="comment"># 6. 测试安装</span></span><br><span class="line">pip install -i https://test.pypi.org/simple/ my-package</span><br><span class="line"></span><br><span class="line"><span class="comment"># 7. 一切正常后，上传到PyPI</span></span><br><span class="line">twine upload dist/*</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-3-设置PyPI凭证"><a href="#7-3-设置PyPI凭证" class="headerlink" title="7.3 设置PyPI凭证"></a>7.3 设置PyPI凭证</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ~/.pypirc</span></span><br><span class="line">[distutils]</span><br><span class="line">index-servers =</span><br><span class="line">    pypi</span><br><span class="line">    testpypi</span><br><span class="line"></span><br><span class="line">[pypi]</span><br><span class="line">username = __token__</span><br><span class="line">password = pypi-xxxxxxxxxxxx</span><br><span class="line"></span><br><span class="line">[testpypi]</span><br><span class="line">username = __token__</span><br><span class="line">password = pypi-xxxxxxxxxxxx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>⚠️ <strong>安全</strong>: 始终使用 <strong>API Token</strong> 而非密码。在 <a target="_blank" rel="noopener" href="https://pypi.org/manage/account/">pypi.org&#x2F;manage&#x2F;account</a> 生成。</p>
+</blockquote>
+<h3 id="7-4-CI-CD-自动发布-GitHub-Actions"><a href="#7-4-CI-CD-自动发布-GitHub-Actions" class="headerlink" title="7.4 CI&#x2F;CD 自动发布 (GitHub Actions)"></a>7.4 CI&#x2F;CD 自动发布 (GitHub Actions)</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># .github/workflows/publish.yml</span></span><br><span class="line"><span class="attr">name:</span> <span class="string">Publish</span> <span class="string">to</span> <span class="string">PyPI</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">release:</span></span><br><span class="line">    <span class="attr">types:</span> [<span class="string">published</span>]</span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">publish:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">permissions:</span></span><br><span class="line">      <span class="attr">id-token:</span> <span class="string">write</span>  <span class="comment"># trusted publishing</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">uses:</span> <span class="string">actions/checkout@v4</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">uses:</span> <span class="string">actions/setup-python@v5</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">python-version:</span> <span class="string">&quot;3.12&quot;</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">run:</span> <span class="string">pip</span> <span class="string">install</span> <span class="string">build</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">run:</span> <span class="string">python</span> <span class="string">-m</span> <span class="string">build</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">uses:</span> <span class="string">pypa/gh-action-pypi-publish@release/v1</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>🎨 <strong>Trusted Publishing</strong>: PyPI 支持 GitHub Actions OIDC，不需要密码或Token，只需在PyPI项目设置中添加 Trusted Publisher。</p>
+</blockquote>
+<hr>
+<h2 id="八、版本管理：Single-sourcing-the-Version"><a href="#八、版本管理：Single-sourcing-the-Version" class="headerlink" title="八、版本管理：Single-sourcing the Version"></a>八、版本管理：Single-sourcing the Version</h2><p><strong>切忌</strong>在多个地方硬编码版本号。PyPA提供了几种优雅的解决方案：</p>
+<h3 id="方案一：setuptools-scm（推荐）"><a href="#方案一：setuptools-scm（推荐）" class="headerlink" title="方案一：setuptools-scm（推荐）"></a>方案一：setuptools-scm（推荐）</h3><p>从 <code>git tag</code> 自动生成版本：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[build-system]</span></span><br><span class="line"><span class="attr">requires</span> = [<span class="string">&quot;setuptools&gt;=77.0&quot;</span>, <span class="string">&quot;setuptools-scm&gt;=8.0&quot;</span>]</span><br><span class="line"><span class="attr">build-backend</span> = <span class="string">&quot;setuptools.build_meta&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[project]</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;my-package&quot;</span></span><br><span class="line"><span class="attr">dynamic</span> = [<span class="string">&quot;version&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="section">[tool.setuptools_scm]</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git tag v1.0.0</span><br><span class="line">python -m build</span><br><span class="line"><span class="comment"># 版本自动设置为 1.0.0</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="方案二：从-init-py-读取"><a href="#方案二：从-init-py-读取" class="headerlink" title="方案二：从 init.py 读取"></a>方案二：从 <strong>init</strong>.py 读取</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># hatchling</span></span><br><span class="line"><span class="section">[tool.hatch.version]</span></span><br><span class="line"><span class="attr">path</span> = <span class="string">&quot;src/my_package/__init__.py&quot;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># src/my_package/__init__.py</span></span><br><span class="line">__version__ = <span class="string">&quot;1.0.0&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="方案三：importlib-metadata-运行时读取"><a href="#方案三：importlib-metadata-运行时读取" class="headerlink" title="方案三：importlib.metadata (运行时读取)"></a>方案三：importlib.metadata (运行时读取)</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> importlib.metadata <span class="keyword">import</span> version, PackageNotFoundError</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    __version__ = version(<span class="string">&quot;my-package&quot;</span>)</span><br><span class="line"><span class="keyword">except</span> PackageNotFoundError:</span><br><span class="line">    __version__ = <span class="string">&quot;unknown&quot;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>✅ <strong>最佳实践</strong>: 使用 <code>setuptools-scm</code> 或 <code>hatchling</code> 的动态版本，从单一源头生成版本，避免多处硬编码。</p>
+</blockquote>
+<hr>
+<h2 id="九、插件和入口点：让你的包可扩展"><a href="#九、插件和入口点：让你的包可扩展" class="headerlink" title="九、插件和入口点：让你的包可扩展"></a>九、插件和入口点：让你的包可扩展</h2><h3 id="9-1-console-scripts-—-命令行入口"><a href="#9-1-console-scripts-—-命令行入口" class="headerlink" title="9.1 console_scripts — 命令行入口"></a>9.1 console_scripts — 命令行入口</h3><p>最常见的用例：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[project.scripts]</span></span><br><span class="line"><span class="attr">mycli</span> = <span class="string">&quot;my_package.cli:main&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>安装后直接可用 <code>mycli</code> 命令。</p>
+<h3 id="9-2-插件系统-—-Entry-Points"><a href="#9-2-插件系统-—-Entry-Points" class="headerlink" title="9.2 插件系统 — Entry Points"></a>9.2 插件系统 — Entry Points</h3><p>这是Python插件体系的基础，以pytest为例：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 你的插件项目</span></span><br><span class="line"><span class="section">[project.entry-points.pytest11]</span></span><br><span class="line"><span class="attr">my-plugin</span> = <span class="string">&quot;my_plugin.module&quot;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义插件</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">pytest_addoption</span>(<span class="params">parser</span>):</span><br><span class="line">    parser.addoption(<span class="string">&quot;--my-option&quot;</span>, action=<span class="string">&quot;store_true&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>安装后，pytest会自动发现并加载你的插件。</p>
+<h3 id="9-3-创建可定制插件的项目"><a href="#9-3-创建可定制插件的项目" class="headerlink" title="9.3 创建可定制插件的项目"></a>9.3 创建可定制插件的项目</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[project.entry-points.&quot;myapp.plugins&quot;]</span></span><br><span class="line"><span class="attr">json-exporter</span> = <span class="string">&quot;myapp_json.plugin:JSONExporter&quot;</span></span><br><span class="line"><span class="attr">csv-exporter</span> = <span class="string">&quot;myapp_csv.plugin:CSVExporter&quot;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在主项目中加载插件</span></span><br><span class="line"><span class="keyword">from</span> importlib.metadata <span class="keyword">import</span> entry_points</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">load_plugins</span>():</span><br><span class="line">    eps = entry_points(group=<span class="string">&quot;myapp.plugins&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> &#123;ep.name: ep.load() <span class="keyword">for</span> ep <span class="keyword">in</span> eps&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>📋 <strong>说明</strong>: Entry points是Python插件生态的核心。pytest、sphinx、flake8、pre-commit等所有支持插件的工具都基于此机制。</p>
+</blockquote>
+<hr>
+<h2 id="十、依赖管理进阶"><a href="#十、依赖管理进阶" class="headerlink" title="十、依赖管理进阶"></a>十、依赖管理进阶</h2><h3 id="10-1-依赖类型完整对比"><a href="#10-1-依赖类型完整对比" class="headerlink" title="10.1 依赖类型完整对比"></a>10.1 依赖类型完整对比</h3><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[build-system]</span></span><br><span class="line"><span class="attr">requires</span> = [<span class="string">&quot;hatchling&quot;</span>]           <span class="comment"># 构建依赖（仅构建时需要）</span></span><br><span class="line"></span><br><span class="line"><span class="section">[project]</span></span><br><span class="line"><span class="attr">dependencies</span> = [                     <span class="comment"># runtime dependencies</span></span><br><span class="line">    <span class="string">&quot;requests&gt;=2.28,&lt;3.0&quot;</span>,</span><br><span class="line">    <span class="string">&quot;click&gt;=8.1&quot;</span>,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="section">[project.optional-dependencies]</span>      <span class="comment"># extra features</span></span><br><span class="line"><span class="attr">cli</span> = [<span class="string">&quot;rich&gt;=13.0&quot;</span>, <span class="string">&quot;typer&gt;=0.15&quot;</span>]</span><br><span class="line"><span class="attr">dev</span> = [<span class="string">&quot;pytest&gt;=8.0&quot;</span>, <span class="string">&quot;ruff&gt;=0.8&quot;</span>, <span class="string">&quot;mypy&gt;=1.14&quot;</span>]</span><br><span class="line"><span class="attr">docs</span> = [<span class="string">&quot;sphinx&gt;=8.0&quot;</span>, <span class="string">&quot;furo&gt;=2024&quot;</span>]</span><br><span class="line"><span class="attr">test</span> = [<span class="string">&quot;pytest&gt;=8.0&quot;</span>, <span class="string">&quot;pytest-cov&gt;=6.0&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<h3 id="10-2-版本约束语法"><a href="#10-2-版本约束语法" class="headerlink" title="10.2 版本约束语法"></a>10.2 版本约束语法</h3><table>
+<thead>
+<tr>
+<th>表达式</th>
+<th>含义</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&gt;=2.28</code></td>
+<td>最低</td>
+<td><code>requests&gt;=2.28</code></td>
+</tr>
+<tr>
+<td><code>&lt;3.0</code></td>
+<td>最高</td>
+<td><code>requests&lt;3.0</code></td>
+</tr>
+<tr>
+<td><code>&gt;=2.28,&lt;3.0</code></td>
+<td>范围</td>
+<td>推荐组合使用</td>
+</tr>
+<tr>
+<td><code>~=2.28.1</code></td>
+<td>兼容版</td>
+<td><code>~=2.28.1</code> ≈ <code>&gt;=2.28.1, &lt;2.29</code></td>
+</tr>
+<tr>
+<td><code>==2.28.1</code></td>
+<td>精确</td>
+<td>应用锁定版本</td>
+</tr>
+<tr>
+<td><code>!=2.28.1</code></td>
+<td>排除</td>
+<td>排除特定版本</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>⚠️ <strong>最佳实践</strong>: 始终使用 <code>&gt;=X,&lt;Y</code> 范围约束，确保兼容性，同时防止无限升级。</p>
+</blockquote>
+<hr>
+<h2 id="十一、常见问题与排错"><a href="#十一、常见问题与排错" class="headerlink" title="十一、常见问题与排错"></a>十一、常见问题与排错</h2><h3 id="11-1-“Why-is-my-package-empty-after-install-”"><a href="#11-1-“Why-is-my-package-empty-after-install-”" class="headerlink" title="11.1 “Why is my package empty after install?”"></a>11.1 “Why is my package empty after install?”</h3><p>最常见的原因是构建后端不知道你的源码在哪里：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># hatchling: 明确指定包路径</span></span><br><span class="line"><span class="section">[tool.hatch.build.targets.wheel]</span></span><br><span class="line"><span class="attr">packages</span> = [<span class="string">&quot;src/my_package&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># setuptools: 明确指定 src 布局</span></span><br><span class="line"><span class="section">[tool.setuptools]</span></span><br><span class="line"><span class="attr">package-dir</span> = &#123;<span class="string">&quot;&quot;</span> = <span class="string">&quot;src&quot;</span>&#125;</span><br><span class="line"><span class="attr">packages</span> = [<span class="string">&quot;my_package&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<h3 id="11-2-“pip-install-e-失败”"><a href="#11-2-“pip-install-e-失败”" class="headerlink" title="11.2 “pip install -e . 失败”"></a>11.2 “pip install -e . 失败”</h3><p>确保 <code>build-backend</code> 支持可编辑安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -e <span class="string">&quot;.[dev]&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="11-3-“ModuleNotFoundError-No-module-named-‘my-package’”"><a href="#11-3-“ModuleNotFoundError-No-module-named-‘my-package’”" class="headerlink" title="11.3 “ModuleNotFoundError: No module named ‘my_package’”"></a>11.3 “ModuleNotFoundError: No module named ‘my_package’”</h3><p>检查是否使用了 <code>src layout</code>但没有给 build backend 指定包路径。</p>
+<h3 id="11-4-“Command-not-found-mycli”"><a href="#11-4-“Command-not-found-mycli”" class="headerlink" title="11.4 “Command not found: mycli”"></a>11.4 “Command not found: mycli”</h3><p>检查 <code>[project.scripts]</code> 中的入口是否正确，并重新安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install --force-reinstall --no-deps dist/*.whl</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="十二、工具链推荐：开箱即用的技术栈"><a href="#十二、工具链推荐：开箱即用的技术栈" class="headerlink" title="十二、工具链推荐：开箱即用的技术栈"></a>十二、工具链推荐：开箱即用的技术栈</h2><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>配置调用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://github.com/pypa/build">build</a></td>
+<td>构建包</td>
+<td><code>python -m build</code></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://twine.readthedocs.io/">twine</a></td>
+<td>上传PyPI</td>
+<td><code>twine upload dist/*</code></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://hatch.pypa.io/">hatch</a></td>
+<td>项目管理</td>
+<td><code>hatch new</code> &#x2F; <code>hatch build</code></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://docs.astral.sh/ruff/">ruff</a></td>
+<td>Lint &amp; Format</td>
+<td><code>ruff check</code> &#x2F; <code>ruff format</code></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://mypy-lang.org/">mypy</a></td>
+<td>类型检查</td>
+<td><code>mypy src/</code></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://docs.pytest.org/">pytest</a></td>
+<td>测试</td>
+<td><code>pytest</code></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://github.com/mgedmin/check-manifest">check-manifest</a></td>
+<td>检查sdist包</td>
+<td><code>check-manifest</code></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://github.com/pypa/pip-audit">pip-audit</a></td>
+<td>安全审计</td>
+<td><code>pip-audit</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="关键要点"><a href="#关键要点" class="headerlink" title="关键要点"></a>关键要点</h3><ul>
+<li><strong>一个文件统治</strong>: <code>pyproject.toml</code> 统一管理项目元数据、依赖、构建、工具配置</li>
+<li><strong>构建后端自选</strong>: new project 用 <code>hatchling</code>，C扩展用 <code>setuptools</code>，简单项目用 <code>flit</code></li>
+<li><strong>始终虚拟环境</strong>: 隔离开发环境，避免依赖冲突</li>
+<li><strong>API Token 而非密码</strong>: 发布PyPI应使用API Token</li>
+<li><strong>src layout</strong>: 避免导入污染，新项目起手就用</li>
+<li><strong>&gt;&#x3D;X, &lt;Y 范围兼容</strong>: 所有依赖使用范围约束</li>
+</ul>
+<h3 id="下一步建议"><a href="#下一步建议" class="headerlink" title="下一步建议"></a>下一步建议</h3><ol>
+<li>把你现有的 <code>setup.py</code> 项目迁移到 <code>pyproject.toml</code></li>
+<li>探索 <a target="_blank" rel="noopener" href="https://hatch.pypa.io/">Hatch</a> 的环境管理</li>
+<li>设置 CI&#x2F;CD 自动发布流水线</li>
+<li>深入阅读 <a target="_blank" rel="noopener" href="https://packaging.python.org/en/latest/guides/">PyPA官方指南</a></li>
+</ol>
+<blockquote>
+<p>📋 <strong>参考资料</strong>:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://packaging.python.org/en/latest/guides/">Python Packaging User Guide</a></li>
+<li><a target="_blank" rel="noopener" href="https://peps.python.org/pep-0621/">PEP 621 — Storing project metadata in pyproject.toml</a></li>
+<li><a target="_blank" rel="noopener" href="https://peps.python.org/pep-0517/">PEP 517 — A build-system independent format for source trees</a></li>
+<li><a target="_blank" rel="noopener" href="https://hatch.pypa.io/">Hatch Documentation</a></li>
+<li><a target="_blank" rel="noopener" href="https://setuptools.pypa.io/">Setuptools Documentation</a></li>
+</ul>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lonelyrookie.github.io">Abel Huang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lonelyrookie.github.io/posts/662026244/">https://lonelyrookie.github.io/posts/662026244/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lonelyrookie.github.io" target="_blank">我的博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Python/">Python</a><a class="post-meta__tags" href="/tags/%E6%89%93%E5%8C%85/">打包</a><a class="post-meta__tags" href="/tags/pyproject-toml/">pyproject.toml</a></div><div class="post-share"><div class="social-share" data-image="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/882026545/" title="Setuptools实战：setup()函数详解与Python打包完全指南"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Setuptools实战：setup()函数详解与Python打包完全指南</div></div><div class="info-2"><div class="info-item-1">前言：setuptools 凭什么统治 Python 打包二十年？打开 GitHub 上任意一个 Python 项目，你大概率会看到一个 setup.py，里面调用了 setuptools.setup()。二十年来，这几乎是 Python 打包的”唯一标准”。 即使2026年的今天，PyPA 力推 pyproject.toml，setuptools 仍是构建 C 扩展的唯一成熟选择，numpy、scipy、pandas、cryptography 等核心库全部依赖它。 本文以 setuptools 官方 Quickstart（v82.0）为基础，先讲透传统的 setup() 函数，再过渡到现代的声明式配置，让你读懂任何 setuptools 项目。  一、快速入门：5 分钟写出第一个 setup.py1.1 最小项目结构123456my-package/├── setup.py              # 构建入口├── README.md└── my_package/           # 源码    ├── __init__.py    └── core.py  1.2 第...</div></div></div></a><a class="pagination-related" href="/posts/1449386854/" title="Qlib从零构建量化策略：手把手实战教程"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Qlib从零构建量化策略：手把手实战教程</div></div><div class="info-2"><div class="info-item-1">写在前面上一篇我们介绍了Qlib的整体架构和核心概念。这篇教程，我们将动手实践，从零开始构建一个完整的量化策略。 你将学到：  ✅ 搭建Qlib开发环境 ✅ 获取和准备股票数据 ✅ 构建预测模型（LightGBM） ✅ 设计交易策略 ✅ 执行回测并分析结果 ✅ 优化策略参数  最终目标：构建一个能够预测沪深300成分股收益率的量化策略，并通过回测验证其有效性。  第一部分：环境搭建1.1 创建虚拟环境12345678# 使用conda创建Python环境conda create -n qlib python=3.10conda activate qlib# 或使用venvpython -m venv qlib_envsource qlib_env/bin/activate  # Linux/Mac# qlib_env\Scripts\activate   # Windows  1.2 安装Qlib1234567# 方式1：通过pip安装（推荐）pip install pyqlib# 方式2：从源码安装（获取最新功能）git clone https://github.com/mic...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/882026545/" title="Setuptools实战：setup()函数详解与Python打包完全指南"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-24</div><div class="info-item-2">Setuptools实战：setup()函数详解与Python打包完全指南</div></div><div class="info-2"><div class="info-item-1">前言：setuptools 凭什么统治 Python 打包二十年？打开 GitHub 上任意一个 Python 项目，你大概率会看到一个 setup.py，里面调用了 setuptools.setup()。二十年来，这几乎是 Python 打包的”唯一标准”。 即使2026年的今天，PyPA 力推 pyproject.toml，setuptools 仍是构建 C 扩展的唯一成熟选择，numpy、scipy、pandas、cryptography 等核心库全部依赖它。 本文以 setuptools 官方 Quickstart（v82.0）为基础，先讲透传统的 setup() 函数，再过渡到现代的声明式配置，让你读懂任何 setuptools 项目。  一、快速入门：5 分钟写出第一个 setup.py1.1 最小项目结构123456my-package/├── setup.py              # 构建入口├── README.md└── my_package/           # 源码    ├── __init__.py    └── core.py  1.2 第...</div></div></div></a><a class="pagination-related" href="/posts/882026546/" title="Hatchling实战：Python现代构建后端完全指南"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-24</div><div class="info-item-2">Hatchling实战：Python现代构建后端完全指南</div></div><div class="info-2"><div class="info-item-1">前言：为什么 PyPA 要自己造一个构建后端？Python 打包世界很长一段时间只有 setuptools。它功能强大，但问题也明显：  setup.py 本质是可执行代码，有安全风险 配置分散在 setup.py + setup.cfg + MANIFEST.in 中 构建速度慢（每次都要执行 Python 代码来解析配置）  PyPA 的目标是：一个纯声明式的、PEP 621 原生的、快速且可扩展的构建后端。这就是 hatchling。  hatchling 的定位：setuptools 的现代化替代品。不是”又一个新的打包工具”，而是”PyPA 认为 Python 打包该有的样子”。  它与 Hatch 的关系：Hatch 是项目管理器（类似 Poetry），hatchling 是其中的构建引擎。但你完全不需要安装 Hatch，hatchling 可以作为独立构建后端使用。  一、快速开始：3 行配置跑起来1.1 最小 pyproject.toml1234567[build-system]requires = [&quot;hatchling&quot;]build-bac...</div></div></div></a><a class="pagination-related" href="/posts/882026544/" title="Microsoft Qlib：量化投资AI框架实战教程"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-05</div><div class="info-item-2">Microsoft Qlib：量化投资AI框架实战教程</div></div><div class="info-2"><div class="info-item-1">前言：为什么选择Qlib？如果你是一名技术开发者，想要进入量化投资领域，你可能会面临这些问题：  数据从哪里来？ 如何高效存储和检索海量金融数据？ 特征怎么构建？ 158个技术因子？360个？还是自己一个个写？ 模型怎么选？ LSTM、LightGBM、Transformer…哪个适合金融预测？ 策略怎么回测？ 如何模拟真实交易环境，考虑滑点、手续费、流动性？ 如何系统化？ 怎么把数据处理、模型训练、策略回测串联成完整流水线？  Microsoft Qlib 正是为解决这些问题而生的AI量化投资平台。它不是一个简单的回测框架，而是一个覆盖量化投资全流程的机器学习研究平台。  Qlib的定位：AI-oriented Quantitative Investment Platform（面向AI的量化投资平台）  GitHub: https://github.com/microsoft/qlib Stars: 14K+ 开发者：微软亚洲研究院    一、Qlib架构设计理念1.1 整体架构：四层设计Qlib采用分层架构设计，从底层基础设施到上层用户接口，共分为四层： 1234567891...</div></div></div></a><a class="pagination-related" href="/posts/1449386854/" title="Qlib从零构建量化策略：手把手实战教程"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-05</div><div class="info-item-2">Qlib从零构建量化策略：手把手实战教程</div></div><div class="info-2"><div class="info-item-1">写在前面上一篇我们介绍了Qlib的整体架构和核心概念。这篇教程，我们将动手实践，从零开始构建一个完整的量化策略。 你将学到：  ✅ 搭建Qlib开发环境 ✅ 获取和准备股票数据 ✅ 构建预测模型（LightGBM） ✅ 设计交易策略 ✅ 执行回测并分析结果 ✅ 优化策略参数  最终目标：构建一个能够预测沪深300成分股收益率的量化策略，并通过回测验证其有效性。  第一部分：环境搭建1.1 创建虚拟环境12345678# 使用conda创建Python环境conda create -n qlib python=3.10conda activate qlib# 或使用venvpython -m venv qlib_envsource qlib_env/bin/activate  # Linux/Mac# qlib_env\Scripts\activate   # Windows  1.2 安装Qlib1234567# 方式1：通过pip安装（推荐）pip install pyqlib# 方式2：从源码安装（获取最新功能）git clone https://github.com/mic...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://avatars.githubusercontent.com/u/40121337?v=4" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Abel Huang</div><div class="author-info-description">热爱技术，热爱生活</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">40</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LonelyRookie"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/LonelyRookie" target="_blank" title="GitHub"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:1782480783@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E7%8E%B0%E4%BB%A3%E5%8C%96Python%E6%89%93%E5%8C%85%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">前言：为什么需要现代化Python打包？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%90%86%E8%A7%A3%EF%BC%9Asetup-py-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A2%AB-pyproject-toml-%E5%8F%96%E4%BB%A3%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">一、一句话理解：setup.py 为什么被 pyproject.toml 取代？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%A0%B8%E5%BF%83%E4%BB%B7%E5%80%BC%EF%BC%9A%E4%BB%8E%E2%80%9D%E8%83%BD%E8%B7%91%E2%80%9D%E5%88%B0%E2%80%9D%E5%A5%BD%E7%94%A8%E2%80%9D"><span class="toc-number">3.</span> <span class="toc-text">二、核心价值：从”能跑”到”好用”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E9%9D%A2%E5%90%91%E5%BC%80%E5%8F%91%E8%80%85%EF%BC%9A%E4%B8%80%E4%B8%AA%E6%96%87%E4%BB%B6%E6%90%9E%E5%AE%9A%E6%89%80%E6%9C%89"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 面向开发者：一个文件搞定所有</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E9%9D%A2%E5%90%91%E5%8F%91%E5%B8%83%E8%80%85%EF%BC%9A%E6%A0%87%E5%87%86%E5%8C%96%E6%B5%81%E7%A8%8B"><span class="toc-number">3.2.</span> <span class="toc-text">2.2 面向发布者：标准化流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E9%9D%A2%E5%90%91%E7%94%A8%E6%88%B7%EF%BC%9A%E5%BC%80%E7%AE%B1%E5%8D%B3%E7%94%A8"><span class="toc-number">3.3.</span> <span class="toc-text">2.3 面向用户：开箱即用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B%EF%BC%9A5%E5%88%86%E9%92%9F%E5%88%9B%E5%BB%BA%E4%BD%A0%E7%9A%84%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%8C%85"><span class="toc-number">4.</span> <span class="toc-text">三、快速开始：5分钟创建你的第一个包</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E9%A1%B9%E7%9B%AE%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 项目初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%A0%B8%E5%BF%83%E6%BA%90%E4%BB%A3%E7%A0%81"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 核心源代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%86%99%E4%B8%8B-pyproject-toml"><span class="toc-number">4.3.</span> <span class="toc-text">3.3 写下 pyproject.toml</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E6%9E%84%E5%BB%BA%E3%80%81%E5%AE%89%E8%A3%85%E4%B8%8E%E6%B5%8B%E8%AF%95"><span class="toc-number">4.4.</span> <span class="toc-text">3.4 构建、安装与测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81pyproject-toml-%E8%AF%A6%E8%A7%A3"><span class="toc-number">5.</span> <span class="toc-text">四、pyproject.toml 详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-build-system-%E2%80%94-%E6%9E%84%E5%BB%BA%E7%B3%BB%E7%BB%9F%E5%A3%B0%E6%98%8E"><span class="toc-number">5.1.</span> <span class="toc-text">4.1 [build-system] — 构建系统声明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-project-%E2%80%94-%E9%A1%B9%E7%9B%AE%E5%85%83%E6%95%B0%E6%8D%AE"><span class="toc-number">5.2.</span> <span class="toc-text">4.2 [project] — 项目元数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-tool-%E2%80%94-%E5%B7%A5%E5%85%B7%E9%85%8D%E7%BD%AE%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4"><span class="toc-number">5.3.</span> <span class="toc-text">4.3 [tool] — 工具配置命名空间</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%9E%84%E5%BB%BA%E5%90%8E%E7%AB%AF%E5%AF%B9%E6%AF%94%EF%BC%9A%E8%B0%81%E9%80%82%E5%90%88%E4%BD%A0%EF%BC%9F"><span class="toc-number">6.</span> <span class="toc-text">五、构建后端对比：谁适合你？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%AE%9E%E6%88%98%E5%BB%BA%E8%AE%AE"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 实战建议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-hatchling-%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3"><span class="toc-number">6.2.</span> <span class="toc-text">5.2 hatchling 配置详解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-setuptools-%E9%85%8D%E7%BD%AE%EF%BC%88%E5%85%BC%E5%AE%B9%E5%90%91%EF%BC%89"><span class="toc-number">6.3.</span> <span class="toc-text">5.3 setuptools 配置（兼容向）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-Poetry-%E8%BF%81%E7%A7%BB%E7%A4%BA%E4%BE%8B"><span class="toc-number">6.4.</span> <span class="toc-text">5.4 Poetry 迁移示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-number">7.</span> <span class="toc-text">六、项目结构最佳实践</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-src-layout-vs-flat-layout"><span class="toc-number">7.1.</span> <span class="toc-text">6.1 src layout vs flat layout</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E5%AE%8C%E6%95%B4%E9%A1%B9%E7%9B%AE%E6%A8%A1%E6%9D%BF"><span class="toc-number">7.2.</span> <span class="toc-text">6.2 完整项目模板</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%8F%91%E5%B8%83%E5%88%B0PyPI%EF%BC%9A%E8%AE%A9%E4%B8%96%E7%95%8C%E7%94%A8%E4%B8%8A%E4%BD%A0%E7%9A%84%E5%8C%85"><span class="toc-number">8.</span> <span class="toc-text">七、发布到PyPI：让世界用上你的包</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E5%8F%91%E5%B8%83%E5%89%8D%E6%A3%80%E6%9F%A5%E6%B8%85%E5%8D%95"><span class="toc-number">8.1.</span> <span class="toc-text">7.1 发布前检查清单</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E5%8F%91%E5%B8%83%E6%B5%81%E7%A8%8B"><span class="toc-number">8.2.</span> <span class="toc-text">7.2 发布流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E8%AE%BE%E7%BD%AEPyPI%E5%87%AD%E8%AF%81"><span class="toc-number">8.3.</span> <span class="toc-text">7.3 设置PyPI凭证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-CI-CD-%E8%87%AA%E5%8A%A8%E5%8F%91%E5%B8%83-GitHub-Actions"><span class="toc-number">8.4.</span> <span class="toc-text">7.4 CI&#x2F;CD 自动发布 (GitHub Actions)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86%EF%BC%9ASingle-sourcing-the-Version"><span class="toc-number">9.</span> <span class="toc-text">八、版本管理：Single-sourcing the Version</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%A1%88%E4%B8%80%EF%BC%9Asetuptools-scm%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="toc-number">9.1.</span> <span class="toc-text">方案一：setuptools-scm（推荐）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%A1%88%E4%BA%8C%EF%BC%9A%E4%BB%8E-init-py-%E8%AF%BB%E5%8F%96"><span class="toc-number">9.2.</span> <span class="toc-text">方案二：从 init.py 读取</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%A1%88%E4%B8%89%EF%BC%9Aimportlib-metadata-%E8%BF%90%E8%A1%8C%E6%97%B6%E8%AF%BB%E5%8F%96"><span class="toc-number">9.3.</span> <span class="toc-text">方案三：importlib.metadata (运行时读取)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E6%8F%92%E4%BB%B6%E5%92%8C%E5%85%A5%E5%8F%A3%E7%82%B9%EF%BC%9A%E8%AE%A9%E4%BD%A0%E7%9A%84%E5%8C%85%E5%8F%AF%E6%89%A9%E5%B1%95"><span class="toc-number">10.</span> <span class="toc-text">九、插件和入口点：让你的包可扩展</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-console-scripts-%E2%80%94-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%85%A5%E5%8F%A3"><span class="toc-number">10.1.</span> <span class="toc-text">9.1 console_scripts — 命令行入口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E6%8F%92%E4%BB%B6%E7%B3%BB%E7%BB%9F-%E2%80%94-Entry-Points"><span class="toc-number">10.2.</span> <span class="toc-text">9.2 插件系统 — Entry Points</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-%E5%88%9B%E5%BB%BA%E5%8F%AF%E5%AE%9A%E5%88%B6%E6%8F%92%E4%BB%B6%E7%9A%84%E9%A1%B9%E7%9B%AE"><span class="toc-number">10.3.</span> <span class="toc-text">9.3 创建可定制插件的项目</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86%E8%BF%9B%E9%98%B6"><span class="toc-number">11.</span> <span class="toc-text">十、依赖管理进阶</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-%E4%BE%9D%E8%B5%96%E7%B1%BB%E5%9E%8B%E5%AE%8C%E6%95%B4%E5%AF%B9%E6%AF%94"><span class="toc-number">11.1.</span> <span class="toc-text">10.1 依赖类型完整对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-%E7%89%88%E6%9C%AC%E7%BA%A6%E6%9D%9F%E8%AF%AD%E6%B3%95"><span class="toc-number">11.2.</span> <span class="toc-text">10.2 版本约束语法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E6%8E%92%E9%94%99"><span class="toc-number">12.</span> <span class="toc-text">十一、常见问题与排错</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-1-%E2%80%9CWhy-is-my-package-empty-after-install-%E2%80%9D"><span class="toc-number">12.1.</span> <span class="toc-text">11.1 “Why is my package empty after install?”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-2-%E2%80%9Cpip-install-e-%E5%A4%B1%E8%B4%A5%E2%80%9D"><span class="toc-number">12.2.</span> <span class="toc-text">11.2 “pip install -e . 失败”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-3-%E2%80%9CModuleNotFoundError-No-module-named-%E2%80%98my-package%E2%80%99%E2%80%9D"><span class="toc-number">12.3.</span> <span class="toc-text">11.3 “ModuleNotFoundError: No module named ‘my_package’”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-4-%E2%80%9CCommand-not-found-mycli%E2%80%9D"><span class="toc-number">12.4.</span> <span class="toc-text">11.4 “Command not found: mycli”</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E5%B7%A5%E5%85%B7%E9%93%BE%E6%8E%A8%E8%8D%90%EF%BC%9A%E5%BC%80%E7%AE%B1%E5%8D%B3%E7%94%A8%E7%9A%84%E6%8A%80%E6%9C%AF%E6%A0%88"><span class="toc-number">13.</span> <span class="toc-text">十二、工具链推荐：开箱即用的技术栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">14.</span> <span class="toc-text">总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E8%A6%81%E7%82%B9"><span class="toc-number">14.1.</span> <span class="toc-text">关键要点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5%E5%BB%BA%E8%AE%AE"><span class="toc-number">14.2.</span> <span class="toc-text">下一步建议</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/882026546/" title="Hatchling实战：Python现代构建后端完全指南"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Hatchling实战：Python现代构建后端完全指南"/></a><div class="content"><a class="title" href="/posts/882026546/" title="Hatchling实战：Python现代构建后端完全指南">Hatchling实战：Python现代构建后端完全指南</a><time datetime="2026-05-24T10:00:00.000Z" title="发表于 2026-05-24 18:00:00">2026-05-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/882026545/" title="Setuptools实战：setup()函数详解与Python打包完全指南"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Setuptools实战：setup()函数详解与Python打包完全指南"/></a><div class="content"><a class="title" href="/posts/882026545/" title="Setuptools实战：setup()函数详解与Python打包完全指南">Setuptools实战：setup()函数详解与Python打包完全指南</a><time datetime="2026-05-24T09:33:00.000Z" title="发表于 2026-05-24 17:33:00">2026-05-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/662026244/" title="Python打包完全指南：从pyproject.toml到发布PyPI"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Python打包完全指南：从pyproject.toml到发布PyPI"/></a><div class="content"><a class="title" href="/posts/662026244/" title="Python打包完全指南：从pyproject.toml到发布PyPI">Python打包完全指南：从pyproject.toml到发布PyPI</a><time datetime="2026-05-24T08:06:01.000Z" title="发表于 2026-05-24 16:06:01">2026-05-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/1449386854/" title="Qlib从零构建量化策略：手把手实战教程"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Qlib从零构建量化策略：手把手实战教程"/></a><div class="content"><a class="title" href="/posts/1449386854/" title="Qlib从零构建量化策略：手把手实战教程">Qlib从零构建量化策略：手把手实战教程</a><time datetime="2026-05-04T16:42:45.000Z" title="发表于 2026-05-05 00:42:45">2026-05-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/882026544/" title="Microsoft Qlib：量化投资AI框架实战教程"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Microsoft Qlib：量化投资AI框架实战教程"/></a><div class="content"><a class="title" href="/posts/882026544/" title="Microsoft Qlib：量化投资AI框架实战教程">Microsoft Qlib：量化投资AI框架实战教程</a><time datetime="2026-05-04T16:23:55.000Z" title="发表于 2026-05-05 00:23:55">2026-05-05</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By Abel Huang</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://github.com/LonelyRookie" target="_blank">Follow me on GitHub</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.4"></script><script src="/js/main.js?v=5.5.4"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const parseViewBox = viewBox => {
+    if (!viewBox) return null
+    const parts = viewBox.trim().split(/[\s,]+/).map(n => Number(n))
+    if (parts.length !== 4 || parts.some(n => Number.isNaN(n))) return null
+    return parts
+  }
+
+  const getSvgViewBox = svg => {
+    const attr = parseViewBox(svg.getAttribute('viewBox'))
+    if (attr) return attr
+
+    // Fallback: use bbox to build a viewBox
+    try {
+      const bbox = svg.getBBox()
+      if (bbox && bbox.width && bbox.height) return [bbox.x, bbox.y, bbox.width, bbox.height]
+    } catch (e) {
+      // getBBox may fail on some edge cases; ignore
+    }
+
+    const w = Number(svg.getAttribute('width')) || 0
+    const h = Number(svg.getAttribute('height')) || 0
+    if (w > 0 && h > 0) return [0, 0, w, h]
+    return [0, 0, 100, 100]
+  }
+
+  const setSvgViewBox = (svg, vb) => {
+    svg.setAttribute('viewBox', `${vb[0]} ${vb[1]} ${vb[2]} ${vb[3]}`)
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
+
+  const openSvgInNewTab = ({ source, initViewBox }) => {
+    const getClonedSvg = () => {
+      if (typeof source === 'string') {
+        const template = document.createElement('template')
+        template.innerHTML = source.trim()
+        const svg = template.content.querySelector('svg')
+        return svg ? svg.cloneNode(true) : null
+      }
+      if (source && typeof source.cloneNode === 'function') {
+        return source.cloneNode(true)
+      }
+      return null
+    }
+
+    const clone = getClonedSvg()
+    if (!clone) return
+    if (initViewBox && initViewBox.length === 4) {
+      clone.setAttribute('viewBox', initViewBox.join(' '))
+    }
+    if (!clone.getAttribute('xmlns')) clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    if (!clone.getAttribute('xmlns:xlink') && clone.outerHTML.includes('xlink:')) {
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    }
+    // inject background to match current theme
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const bg = getComputedStyle(document.body).backgroundColor || (isDark ? '#1e1e1e' : '#ffffff')
+    if (!clone.style.background) clone.style.background = bg
+
+    const serializer = new XMLSerializer()
+    const svgSource = serializer.serializeToString(clone)
+    const htmlSource = `<!doctype html><html><head><meta charset="utf-8" />
+      <style>
+        html, body { width: 100%; height: 100%; margin: 0; display: flex; align-items: center; justify-content: center; background: ${bg}; }
+        svg { max-width: 100%; max-height: 100%; height: auto; width: auto; }
+      </style>
+      </head><body>${svgSource}</body></html>`
+    const blob = new Blob([htmlSource], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank', 'noopener')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  }
+
+  const attachMermaidViewerButton = wrap => {
+    let btn = wrap.querySelector('.mermaid-open-btn')
+    if (!btn) {
+      btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = 'mermaid-open-btn'
+      wrap.appendChild(btn)
+    }
+
+    btn.innerHTML = '<i class="fa fa-search fa-fw" aria-hidden="true"></i>'
+
+    if (!btn.__mermaidViewerBound) {
+      btn.addEventListener('click', e => {
+        e.preventDefault()
+        e.stopPropagation()
+        const svg = wrap.__mermaidOriginalSvg || wrap.querySelector('svg')
+        if (!svg) return
+        const initViewBox = wrap.__mermaidInitViewBox
+        if (typeof svg === 'string') {
+          openSvgInNewTab({ source: svg, initViewBox })
+          return
+        }
+        openSvgInNewTab({ source: svg, initViewBox })
+      })
+      btn.__mermaidViewerBound = true
+    }
+  }
+
+  // Zoom around a point (px, py) in the SVG viewport (in viewBox coordinates)
+  const zoomAtPoint = (vb, factor, px, py) => {
+    const w = vb[2] * factor
+    const h = vb[3] * factor
+    const nx = px - (px - vb[0]) * factor
+    const ny = py - (py - vb[1]) * factor
+    return [nx, ny, w, h]
+  }
+
+  const initMermaidGestures = wrap => {
+    const svg = wrap.querySelector('svg')
+    if (!svg) return
+
+    // Ensure viewBox exists so gestures always work
+    const initVb = getSvgViewBox(svg)
+    wrap.__mermaidInitViewBox = initVb
+    wrap.__mermaidCurViewBox = initVb.slice()
+    setSvgViewBox(svg, initVb)
+
+    // Avoid binding multiple times on themeChange/pjax
+    if (wrap.__mermaidGestureBound) return
+    wrap.__mermaidGestureBound = true
+
+    // Helper: map client (viewport) coordinate -> viewBox coordinate
+    const clientToViewBox = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect()
+      const vb = wrap.__mermaidCurViewBox || getSvgViewBox(svg)
+      const x = vb[0] + (clientX - rect.left) * (vb[2] / rect.width)
+      const y = vb[1] + (clientY - rect.top) * (vb[3] / rect.height)
+      return { x, y, rect, vb }
+    }
+
+    const state = {
+      pointers: new Map(),
+      startVb: null,
+      startDist: 0,
+      startCenter: null
+    }
+
+    const clampVb = vb => {
+      const init = wrap.__mermaidInitViewBox || vb
+      const minW = init[2] * 0.1
+      const maxW = init[2] * 10
+      const minH = init[3] * 0.1
+      const maxH = init[3] * 10
+      vb[2] = clamp(vb[2], minW, maxW)
+      vb[3] = clamp(vb[3], minH, maxH)
+      return vb
+    }
+
+    const setCurVb = vb => {
+      vb = clampVb(vb)
+      wrap.__mermaidCurViewBox = vb
+      setSvgViewBox(svg, vb)
+    }
+
+    const onPointerDown = e => {
+      // Allow only primary button for mouse
+      if (e.pointerType === 'mouse' && e.button !== 0) return
+      svg.setPointerCapture(e.pointerId)
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (state.pointers.size === 1) {
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      } else if (state.pointers.size === 2) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        state.startDist = Math.hypot(dx, dy)
+        state.startVb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        state.startCenter = { x: (pts[0].x + pts[1].x) / 2, y: (pts[0].y + pts[1].y) / 2 }
+      }
+    }
+
+    const onPointerMove = e => {
+      if (!state.pointers.has(e.pointerId)) return
+      state.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      // Pan with 1 pointer
+      if (state.pointers.size === 1 && state.startVb) {
+        const p = [...state.pointers.values()][0]
+        const prev = { x: e.clientX - e.movementX, y: e.clientY - e.movementY }
+        // movementX/Y unreliable on touch, compute from stored last position
+        const last = wrap.__mermaidLastSinglePointer || p
+        const dxClient = p.x - last.x
+        const dyClient = p.y - last.y
+        wrap.__mermaidLastSinglePointer = p
+
+        const { rect } = clientToViewBox(p.x, p.y)
+        const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+        const dx = dxClient * (vb[2] / rect.width)
+        const dy = dyClient * (vb[3] / rect.height)
+        setCurVb([vb[0] - dx, vb[1] - dy, vb[2], vb[3]])
+        return
+      }
+
+      // Pinch zoom with 2 pointers
+      if (state.pointers.size === 2 && state.startVb && state.startDist > 0) {
+        const pts = [...state.pointers.values()]
+        const dx = pts[0].x - pts[1].x
+        const dy = pts[0].y - pts[1].y
+        const dist = Math.hypot(dx, dy)
+        if (!dist) return
+        const factor = state.startDist / dist // dist bigger => zoom in (viewBox smaller)
+
+        const cx = (pts[0].x + pts[1].x) / 2
+        const cy = (pts[0].y + pts[1].y) / 2
+        const centerClient = { x: cx, y: cy }
+
+        const pxy = clientToViewBox(centerClient.x, centerClient.y)
+        const cpx = pxy.x
+        const cpy = pxy.y
+
+        const vb = zoomAtPoint(state.startVb, factor, cpx, cpy)
+        setCurVb(vb)
+      }
+    }
+
+    const onPointerUpOrCancel = e => {
+      state.pointers.delete(e.pointerId)
+      if (state.pointers.size === 0) {
+        state.startVb = null
+        state.startDist = 0
+        state.startCenter = null
+        wrap.__mermaidLastSinglePointer = null
+      } else if (state.pointers.size === 1) {
+        // reset single pointer baseline to avoid jump
+        wrap.__mermaidLastSinglePointer = [...state.pointers.values()][0]
+      }
+    }
+
+    // Wheel zoom (mouse/trackpad)
+    const onWheel = e => {
+      // ctrlKey on mac trackpad pinch; we treat both as zoom
+      e.preventDefault()
+      const delta = e.deltaY
+      const zoomFactor = delta > 0 ? 1.1 : 0.9
+      const { x, y } = clientToViewBox(e.clientX, e.clientY)
+      const vb = (wrap.__mermaidCurViewBox || getSvgViewBox(svg)).slice()
+      setCurVb(zoomAtPoint(vb, zoomFactor, x, y))
+    }
+
+    const onDblClick = () => {
+      const init = wrap.__mermaidInitViewBox
+      if (!init) return
+      wrap.__mermaidCurViewBox = init.slice()
+      setSvgViewBox(svg, init)
+    }
+
+    svg.addEventListener('pointerdown', onPointerDown)
+    svg.addEventListener('pointermove', onPointerMove)
+    svg.addEventListener('pointerup', onPointerUpOrCancel)
+    svg.addEventListener('pointercancel', onPointerUpOrCancel)
+    svg.addEventListener('wheel', onWheel, { passive: false })
+    svg.addEventListener('dblclick', onDblClick)
+  }
+
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? '' : ''
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+
+      // Clear old render (themeChange/pjax will rerun)
+      const oldSvg = item.querySelector('svg')
+      if (oldSvg) oldSvg.remove()
+      item.__mermaidGestureBound = false
+
+      const config = mermaidSrc.dataset.config ? JSON.parse(mermaidSrc.dataset.config) : {}
+      if (!config.theme) {
+        config.theme = theme
+      }
+      const mermaidThemeConfig = `%%{init: ${JSON.stringify(config)}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+        if (true) initMermaidGestures(item)
+        item.__mermaidOriginalSvg = svg
+        if (true) attachMermaidViewerButton(item)
+      }
+
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      true
+        ? pjax.loadUrl('/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.4"></script></div></div></body></html>
